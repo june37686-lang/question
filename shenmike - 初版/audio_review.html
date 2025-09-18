@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>神秘客走访门店管理系统 - 录音审核</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#165DFF',
+                        secondary: '#4080FF',
+                        success: '#00B42A',
+                        warning: '#FF7D00',
+                        danger: '#F53F3F',
+                        info: '#86909C',
+                        light: '#F2F3F5',
+                        dark: '#1D2129',
+                    },
+                    fontFamily: {
+                        sans: ['PingFang SC', 'Helvetica Neue', 'Arial', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .sidebar-item-active {
+                background-color: #E8F3FF;
+                color: #165DFF;
+                border-right: 3px solid #165DFF;
+            }
+            .card-shadow {
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            }
+            .timeline-dot {
+                width: 12px;
+                height: 12px;
+                border-radius: 50%;
+                background-color: #165DFF;
+                position: relative;
+            }
+            .timeline-dot::before {
+                content: '';
+                position: absolute;
+                width: 20px;
+                height: 20px;
+                border-radius: 50%;
+                background-color: rgba(22, 93, 255, 0.2);
+                top: -4px;
+                left: -4px;
+            }
+            .question-item {
+                border: 1px solid #E5E6EB;
+                border-radius: 6px;
+                transition: all 0.3s ease;
+            }
+            .question-item:hover {
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+                border-color: #165DFF;
+            }
+            .question-item-active {
+                border-color: #165DFF;
+                box-shadow: 0 0 0 1px rgba(22, 93, 255, 0.2);
+                background-color: #F7FAFF;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans text-dark">
+    <div class="flex h-screen overflow-hidden">
+        <!-- 侧边栏 -->
+        <aside class="w-64 bg-white h-full shadow-md flex-shrink-0">
+            <!-- 系统标题 -->
+            <div class="h-16 flex items-center justify-center border-b border-gray-200">
+                <h1 class="text-xl font-bold text-primary">神秘客走访系统</h1>
+            </div>
+            
+            <!-- 侧边菜单 -->
+            <nav class="py-4">
+                <div class="px-4 py-2 text-xs font-medium text-gray-500">系统管理</div>
+                <a href="#" class="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50">
+                    <i class="fa fa-tachometer w-6"></i>
+                    <span>控制台</span>
+                </a>
+                
+                <div class="px-4 py-2 text-xs font-medium text-gray-500 mt-4">问卷管理</div>
+                <a href="#" class="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50">
+                    <i class="fa fa-file-text w-6"></i>
+                    <span>问卷设计</span>
+                </a>
+                <a href="#" class="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50">
+                    <i class="fa fa-th-large w-6"></i>
+                    <span>问卷模板</span>
+                </a>
+                
+                <div class="px-4 py-2 text-xs font-medium text-gray-500 mt-4">审核管理</div>
+                <a href="#" class="flex items-center px-4 py-3 text-sm sidebar-item-active">
+                    <i class="fa fa-headphones w-6"></i>
+                    <span>录音审核</span>
+                </a>
+                <a href="#" class="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50">
+                    <i class="fa fa-check-square w-6"></i>
+                    <span>任务分配</span>
+                </a>
+                
+                <div class="px-4 py-2 text-xs font-medium text-gray-500 mt-4">成绩管理</div>
+                <a href="#" class="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50">
+                    <i class="fa fa-bar-chart w-6"></i>
+                    <span>成绩统计</span>
+                </a>
+                <a href="#" class="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50">
+                    <i class="fa fa-file-excel-o w-6"></i>
+                    <span>报告导出</span>
+                </a>
+                
+                <div class="px-4 py-2 text-xs font-medium text-gray-500 mt-4">门店管理</div>
+                <a href="#" class="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50">
+                    <i class="fa fa-building w-6"></i>
+                    <span>门店信息</span>
+                </a>
+                <a href="#" class="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50">
+                    <i class="fa fa-gavel w-6"></i>
+                    <span>申诉管理</span>
+                </a>
+                
+                <div class="px-4 py-2 text-xs font-medium text-gray-500 mt-4">用户管理</div>
+                <a href="#" class="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50">
+                    <i class="fa fa-users w-6"></i>
+                    <span>用户列表</span>
+                </a>
+                <a href="#" class="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50">
+                    <i class="fa fa-key w-6"></i>
+                    <span>角色权限</span>
+                </a>
+            </nav>
+        </aside>
+        
+        <!-- 主内容区 -->
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <!-- 顶部导航栏 -->
+            <header class="h-16 bg-white shadow-sm flex items-center justify-between px-6">
+                <div class="flex items-center">
+                    <button id="toggle-sidebar" class="mr-4 text-gray-500 hover:text-primary">
+                        <i class="fa fa-bars text-xl"></i>
+                    </button>
+                    <div class="flex items-center space-x-2">
+                        <h2 class="text-lg font-medium">录音审核</h2>
+                        <span class="text-xs px-2 py-1 bg-primary/10 text-primary rounded-full">审核中</span>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="flex items-center border border-gray-200 rounded px-3 py-1.5">
+                        <i class="fa fa-search text-gray-400 mr-2"></i>
+                        <input type="text" placeholder="搜索订单号、门店名称..." class="text-sm outline-none w-40">
+                    </div>
+                    <button class="relative text-gray-500 hover:text-primary">
+                        <i class="fa fa-bell text-xl"></i>
+                        <span class="absolute -top-1 -right-1 w-4 h-4 bg-danger rounded-full text-white text-xs flex items-center justify-center">3</span>
+                    </button>
+                    <div class="flex items-center">
+                        <img src="https://picsum.photos/id/1012/40/40" alt="用户头像" class="w-8 h-8 rounded-full object-cover mr-2">
+                        <span class="text-sm font-medium">审核员</span>
+                        <i class="fa fa-angle-down ml-2 text-gray-500"></i>
+                    </div>
+                </div>
+            </header>
+            
+            <!-- 内容区域 -->
+            <main class="flex-1 overflow-y-auto p-6">
+                <!-- 任务基本信息 -->
+                <div class="bg-white rounded-lg p-6 card-shadow mb-6">
+                    <div class="flex flex-col md:flex-row md:items-center md:justify-between">
+                        <div>
+                            <h3 class="text-xl font-bold">订单号：SK202308010001</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-2 mt-3 text-sm">
+                                <div class="flex items-center">
+                                    <span class="text-gray-500 w-24">门店名称：</span>
+                                    <span class="font-medium">北京朝阳店</span>
+                                </div>
+                                <div class="flex items-center">
+                                    <span class="text-gray-500 w-24">门店编号：</span>
+                                    <span>STORE-BJ-001</span>
+                                </div>
+                                <div class="flex items-center">
+                                    <span class="text-gray-500 w-24">走访日期：</span>
+                                    <span>2023-08-01</span>
+                                </div>
+                                <div class="flex items-center">
+                                    <span class="text-gray-500 w-24">神秘客期数：</span>
+                                    <span>2023-Q3-001</span>
+                                </div>
+                                <div class="flex items-center">
+                                    <span class="text-gray-500 w-24">项目名称：</span>
+                                    <span>元气肌护理</span>
+                                </div>
+                                <div class="flex items-center">
+                                    <span class="text-gray-500 w-24">提交日期：</span>
+                                    <span>2023-08-02 15:30:45</span>
+                                </div>
+                                <div class="flex items-center">
+                                    <span class="text-gray-500 w-24">录音时长：</span>
+                                    <span>1小时45分钟</span>
+                                </div>
+                                <div class="flex items-center">
+                                    <span class="text-gray-500 w-24">神秘客得分：</span>
+                                    <span class="font-medium text-warning">85分</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex space-x-4 mt-6 md:mt-0">
+                            <button class="px-4 py-2 border border-gray-300 rounded text-sm text-gray-700 hover:bg-gray-50">
+                                <i class="fa fa-undo mr-2"></i>保存为草稿
+                            </button>
+                            <button class="px-4 py-2 border border-danger text-danger rounded text-sm hover:bg-danger/5">
+                                <i class="fa fa-ban mr-2"></i>驳回重审
+                            </button>
+                            <button class="px-4 py-2 bg-primary text-white rounded text-sm hover:bg-primary/90">
+                                <i class="fa fa-check mr-2"></i>完成审核
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 审核区域 -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+                    <!-- 录音播放器 -->
+                    <div class="lg:col-span-1 space-y-6">
+                        <!-- 播放器 -->
+                        <div class="bg-white rounded-lg p-6 card-shadow">
+                            <h3 class="text-base font-medium mb-4">录音播放器</h3>
+                            <div class="space-y-4">
+                                <div class="flex items-center justify-center">
+                                    <button id="playPauseBtn" class="w-16 h-16 rounded-full bg-primary text-white flex items-center justify-center">
+                                        <i class="fa fa-play text-xl"></i>
+                                    </button>
+                                </div>
+                                <div class="space-y-2">
+                                    <div class="flex items-center justify-between text-xs text-gray-500">
+                                        <span id="currentTime">00:00:00</span>
+                                        <span id="totalTime">01:45:00</span>
+                                    </div>
+                                    <div class="relative h-2 bg-gray-200 rounded-full">
+                                        <div id="progressBar" class="absolute left-0 top-0 h-full w-1/4 bg-primary rounded-full"></div>
+                                        <div id="progressHandle" class="absolute top-1/2 transform -translate-y-1/2 w-4 h-4 bg-white border-2 border-primary rounded-full cursor-pointer" style="left: 25%"></div>
+                                    </div>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <button class="text-gray-500 hover:text-primary text-sm">
+                                        <i class="fa fa-backward mr-1"></i>15秒
+                                    </button>
+                                    <button class="text-gray-500 hover:text-primary text-sm">
+                                        <i class="fa fa-volume-up mr-1"></i>音量
+                                    </button>
+                                    <button class="text-gray-500 hover:text-primary text-sm">
+                                        <i class="fa fa-forward mr-1"></i>15秒
+                                    </button>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <button class="text-gray-500 hover:text-primary text-sm">
+                                        <i class="fa fa-repeat mr-1"></i>循环播放
+                                    </button>
+                                    <button class="text-gray-500 hover:text-primary text-sm">
+                                        <i class="fa fa-arrows-h mr-1"></i>倍速
+                                    </button>
+                                    <button class="text-gray-500 hover:text-primary text-sm">
+                                        <i class="fa fa-microphone-slash mr-1"></i>静音
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 时间戳标记 -->
+                        <div class="bg-white rounded-lg p-6 card-shadow">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="text-base font-medium">时间戳标记</h3>
+                                <button class="text-xs text-primary">
+                                    <i class="fa fa-trash-o mr-1"></i>清空
+                                </button>
+                            </div>
+                            <div class="space-y-3 max-h-60 overflow-y-auto">
+                                <div class="flex items-center justify-between p-2 bg-gray-50 rounded">
+                                    <div class="flex items-center">
+                                        <i class="fa fa-clock-o text-primary mr-2"></i>
+                                        <span class="text-sm">预约服务 - 客服接听及时性</span>
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        <span class="text-xs text-gray-500">00:02:15</span>
+                                        <button class="text-primary text-xs hover:underline">
+                                            <i class="fa fa-play-circle mr-1"></i>播放
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="flex items-center justify-between p-2 bg-gray-50 rounded">
+                                    <div class="flex items-center">
+                                        <i class="fa fa-clock-o text-primary mr-2"></i>
+                                        <span class="text-sm">护理前接待 - 服务态度</span>
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        <span class="text-xs text-gray-500">00:15:30</span>
+                                        <button class="text-primary text-xs hover:underline">
+                                            <i class="fa fa-play-circle mr-1"></i>播放
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="flex items-center justify-between p-2 bg-gray-50 rounded">
+                                    <div class="flex items-center">
+                                        <i class="fa fa-clock-o text-primary mr-2"></i>
+                                        <span class="text-sm">护理体验 - 专业度</span>
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        <span class="text-xs text-gray-500">00:45:20</span>
+                                        <button class="text-primary text-xs hover:underline">
+                                            <i class="fa fa-play-circle mr-1"></i>播放
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="flex items-center justify-between p-2 bg-gray-50 rounded">
+                                    <div class="flex items-center">
+                                        <i class="fa fa-clock-o text-primary mr-2"></i>
+                                        <span class="text-sm">护理后接待 - 售后说明</span>
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        <span class="text-xs text-gray-500">01:20:10</span>
+                                        <button class="text-primary text-xs hover:underline">
+                                            <i class="fa fa-play-circle mr-1"></i>播放
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mt-4">
+                                <button id="addTimestampBtn" class="w-full py-2 bg-primary text-white rounded text-sm hover:bg-primary/90">
+                                    <i class="fa fa-plus-circle mr-1"></i>添加当前时间戳
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 问卷审核 -->
+                    <div class="lg:col-span-2">
+                        <div class="bg-white rounded-lg p-6 card-shadow h-full">
+                            <div class="flex items-center justify-between mb-6">
+                                <h3 class="text-base font-medium">问卷审核</h3>
+                                <div class="flex items-center text-sm text-gray-500">
+                                    <span>已审核：3/12</span>
+                                    <div class="mx-3 w-16 h-2 bg-gray-200 rounded-full">
+                                        <div class="h-full w-1/4 bg-primary rounded-full"></div>
+                                    </div>
+                                    <span>25%</span>
+                                </div>
+                            </div>
+                            
+                            <!-- 模块列表 -->
+                            <div class="space-y-8 max-h-[calc(100vh-400px)] overflow-y-auto pr-2">
+                                <!-- 模块1 -->
+                                <div>
+                                    <div class="flex items-center mb-4">
+                                        <span class="w-6 h-6 rounded-full bg-primary text-white text-xs flex items-center justify-center mr-2">1</span>
+                                        <h4 class="text-base font-medium">预约服务</h4>
+                                    </div>
+                                    
+                                    <!-- 题目列表 -->
+                                    <div class="space-y-4 pl-8">
+                                        <!-- 题目1 -->
+                                        <div class="question-item p-4 question-item-active">
+                                            <div class="flex items-start justify-between mb-3">
+                                                <div>
+                                                    <div class="flex items-center">
+                                                        <span class="text-xs bg-primary text-white px-1.5 py-0.5 rounded mr-2">单选</span>
+                                                        <h5 class="text-sm font-medium">1. 客服人员接听电话是否及时？</h5>
+                                                        <span class="ml-2 text-xs px-1.5 py-0.5 bg-success/10 text-success rounded">已匹配</span>
+                                                    </div>
+                                                    <p class="text-sm mt-2">神秘客选择：<span class="font-medium">及时（响铃3声内）</span> (10分)</p>
+                                                </div>
+                                                <div class="flex space-x-2">
+                                                    <button class="text-primary text-sm hover:underline" title="添加时间戳">
+                                                        <i class="fa fa-clock-o mr-1"></i>00:02:15
+                                                    </button>
+                                                    <button class="text-primary text-sm hover:underline" title="跳转播放">
+                                                        <i class="fa fa-play-circle"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            
+                                            <!-- 审核结果 -->
+                                            <div class="border-t border-gray-100 pt-4 space-y-4">
+                                                <div>
+                                                    <label class="block text-sm text-gray-700 mb-2">审核结果</label>
+                                                    <div class="flex space-x-4">
+                                                        <label class="inline-flex items-center">
+                                                            <input type="radio" name="reviewResult1" class="w-4 h-4 text-primary" checked>
+                                                            <span class="ml-2 text-sm text-gray-700">准确 (得分有效)</span>
+                                                        </label>
+                                                        <label class="inline-flex items-center">
+                                                            <input type="radio" name="reviewResult1" class="w-4 h-4 text-primary">
+                                                            <span class="ml-2 text-sm text-gray-700">不准确 (得分无效)</span>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    <label class="block text-sm text-gray-700 mb-2">评判依据</label>
+                                                    <div class="flex space-x-4">
+                                                        <label class="inline-flex items-center">
+                                                            <input type="radio" name="judgmentBasis1" class="w-4 h-4 text-primary" checked>
+                                                            <span class="ml-2 text-sm text-gray-700">录音可判断</span>
+                                                        </label>
+                                                        <label class="inline-flex items-center">
+                                                            <input type="radio" name="judgmentBasis1" class="w-4 h-4 text-primary">
+                                                            <span class="ml-2 text-sm text-gray-700">与客人核实</span>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    <label class="block text-sm text-gray-700 mb-2">审核说明</label>
+                                                    <textarea rows="3" class="w-full px-3 py-2 border border-gray-300 rounded text-sm" placeholder="请输入审核说明...">经录音核实，客服在响铃2声内接听电话，服务态度良好，评分准确。</textarea>
+                                                </div>
+                                                <div>
+                                                    <label class="block text-sm text-gray-700 mb-2">修正分数</label>
+                                                    <input type="number" value="10" class="w-20 px-3 py-2 border border-gray-300 rounded text-sm">
+                                                    <span class="ml-2 text-sm text-gray-500">/ 10分</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- 题目2 -->
+                                        <div class="question-item p-4">
+                                            <div class="flex items-start justify-between mb-3">
+                                                <div>
+                                                    <div class="flex items-center">
+                                                        <span class="text-xs bg-secondary text-white px-1.5 py-0.5 rounded mr-2">评分</span>
+                                                        <h5 class="text-sm font-medium">2. 客服人员的服务态度如何？</h5>
+                                                        <span class="ml-2 text-xs px-1.5 py-0.5 bg-warning/10 text-warning rounded">待审核</span>
+                                                    </div>
+                                                    <p class="text-sm mt-2">神秘客评分：<span class="font-medium">5分</span> (满分5分)</p>
+                                                </div>
+                                                <div class="flex space-x-2">
+                                                    <button class="text-gray-400 text-sm hover:text-primary" title="添加时间戳">
+                                                        <i class="fa fa-clock-o mr-1"></i>添加
+                                                    </button>
+                                                    <button class="text-gray-400 text-sm hover:text-primary" title="跳转播放">
+                                                        <i class="fa fa-play-circle"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            
+                                            <!-- 审核结果 -->
+                                            <div class="border-t border-gray-100 pt-4 space-y-4">
+                                                <div>
+                                                    <label class="block text-sm text-gray-700 mb-2">审核结果</label>
+                                                    <div class="flex space-x-4">
+                                                        <label class="inline-flex items-center">
+                                                            <input type="radio" name="reviewResult2" class="w-4 h-4 text-primary">
+                                                            <span class="ml-2 text-sm text-gray-700">准确 (得分有效)</span>
+                                                        </label>
+                                                        <label class="inline-flex items-center">
+                                                            <input type="radio" name="reviewResult2" class="w-4 h-4 text-primary">
+                                                            <span class="ml-2 text-sm text-gray-700">不准确 (得分无效)</span>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    <label class="block text-sm text-gray-700 mb-2">评判依据</label>
+                                                    <div class="flex space-x-4">
+                                                        <label class="inline-flex items-center">
+                                                            <input type="radio" name="judgmentBasis2" class="w-4 h-4 text-primary">
+                                                            <span class="ml-2 text-sm text-gray-700">录音可判断</span>
+                                                        </label>
+                                                        <label class="inline-flex items-center">
+                                                            <input type="radio" name="judgmentBasis2" class="w-4 h-4 text-primary">
+                                                            <span class="ml-2 text-sm text-gray-700">与客人核实</span>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    <label class="block text-sm text-gray-700 mb-2">审核说明</label>
+                                                    <textarea rows="3" class="w-full px-3 py-2 border border-gray-300 rounded text-sm" placeholder="请输入审核说明..."></textarea>
+                                                </div>
+                                                <div>
+                                                    <label class="block text-sm text-gray-700 mb-2">修正分数</label>
+                                                    <input type="number" value="5" min="1" max="5" class="w-20 px-3 py-2 border border-gray-300 rounded text-sm">
+                                                    <span class="ml-2 text-sm text-gray-500">/ 5分</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- 模块2 -->
+                                <div>
+                                    <div class="flex items-center mb-4">
+                                        <span class="w-6 h-6 rounded-full bg-primary text-white text-xs flex items-center justify-center mr-2">2</span>
+                                        <h4 class="text-base font-medium">护理前接待</h4>
+                                    </div>
+                                    
+                                    <!-- 题目列表 -->
+                                    <div class="space-y-4 pl-8">
+                                        <!-- 题目1 -->
+                                        <div class="question-item p-4">
+                                            <div class="flex items-start justify-between mb-3">
+                                                <div>
+                                                    <div class="flex items-center">
+                                                        <span class="text-xs bg-success text-white px-1.5 py-0.5 rounded mr-2">多选评分</span>
+                                                        <h5 class="text-sm font-medium">1. 护理前接待流程中，服务人员提供了哪些服务？</h5>
+                                                        <span class="ml-2 text-xs px-1.5 py-0.5 bg-danger/10 text-danger rounded">存疑</span>
+                                                    </div>
+                                                    <p class="text-sm mt-2">神秘客选择：<span class="font-medium">热情问候 (3分)、递上茶水 (2分)</span> (共5分)</p>
+                                                </div>
+                                                <div class="flex space-x-2">
+                                                    <button class="text-gray-400 text-sm hover:text-primary" title="添加时间戳">
+                                                        <i class="fa fa-clock-o mr-1"></i>添加
+                                                    </button>
+                                                    <button class="text-gray-400 text-sm hover:text-primary" title="跳转播放">
+                                                        <i class="fa fa-play-circle"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            
+                                            <!-- 审核结果 -->
+                                            <div class="border-t border-gray-100 pt-4 space-y-4">
+                                                <div>
+                                                    <label class="block text-sm text-gray-700 mb-2">审核结果</label>
+                                                    <div class="flex space-x-4">
+                                                        <label class="inline-flex items-center">
+                                                            <input type="radio" name="reviewResult3" class="w-4 h-4 text-primary">
+                                                            <span class="ml-2 text-sm text-gray-700">准确 (得分有效)</span>
+                                                        </label>
+                                                        <label class="inline-flex items-center">
+                                                            <input type="radio" name="reviewResult3" class="w-4 h-4 text-primary" checked>
+                                                            <span class="ml-2 text-sm text-gray-700">不准确 (得分无效)</span>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    <label class="block text-sm text-gray-700 mb-2">评判依据</label>
+                                                    <div class="flex space-x-4">
+                                                        <label class="inline-flex items-center">
+                                                            <input type="radio" name="judgmentBasis3" class="w-4 h-4 text-primary" checked>
+                                                            <span class="ml-2 text-sm text-gray-700">录音可判断</span>
+                                                        </label>
+                                                        <label class="inline-flex items-center">
+                                                            <input type="radio" name="judgmentBasis3" class="w-4 h-4 text-primary">
+                                                            <span class="ml-2 text-sm text-gray-700">与客人核实</span>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    <label class="block text-sm text-gray-700 mb-2">审核说明</label>
+                                                    <textarea rows="3" class="w-full px-3 py-2 border border-gray-300 rounded text-sm" placeholder="请输入审核说明...">经录音核实，服务人员确实有热情问候，但未提供茶水服务。建议修正分数为3分。</textarea>
+                                                </div>
+                                                <div>
+                                                    <label class="block text-sm text-gray-700 mb-2">修正分数</label>
+                                                    <input type="number" value="3" class="w-20 px-3 py-2 border border-gray-300 rounded text-sm">
+                                                    <span class="ml-2 text-sm text-gray-500">/ 5分</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- 题目2 -->
+                                        <div class="question-item p-4">
+                                            <div class="flex items-start justify-between mb-3">
+                                                <div>
+                                                    <div class="flex items-center">
+                                                        <span class="text-xs bg-warning text-white px-1.5 py-0.5 rounded mr-2">条件跳转</span>
+                                                        <h5 class="text-sm font-medium">2. 医生是否向您介绍了元气肌项目？</h5>
+                                                        <span class="ml-2 text-xs px-1.5 py-0.5 bg-warning/10 text-warning rounded">待审核</span>
+                                                    </div>
+                                                    <p class="text-sm mt-2">神秘客选择：<span class="font-medium">否</span> (0分)</p>
+                                                </div>
+                                                <div class="flex space-x-2">
+                                                    <button class="text-gray-400 text-sm hover:text-primary" title="添加时间戳">
+                                                        <i class="fa fa-clock-o mr-1"></i>添加
+                                                    </button>
+                                                    <button class="text-gray-400 text-sm hover:text-primary" title="跳转播放">
+                                                        <i class="fa fa-play-circle"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            
+                                            <!-- 审核结果 -->
+                                            <div class="border-t border-gray-100 pt-4 space-y-4">
+                                                <div>
+                                                    <label class="block text-sm text-gray-700 mb-2">审核结果</label>
+                                                    <div class="flex space-x-4">
+                                                        <label class="inline-flex items-center">
+                                                            <input type="radio" name="reviewResult4" class="w-4 h-4 text-primary">
+                                                            <span class="ml-2 text-sm text-gray-700">准确 (得分有效)</span>
+                                                        </label>
+                                                        <label class="inline-flex items-center">
+                                                            <input type="radio" name="reviewResult4" class="w-4 h-4 text-primary">
+                                                            <span class="ml-2 text-sm text-gray-700">不准确 (得分无效)</span>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    <label class="block text-sm text-gray-700 mb-2">评判依据</label>
+                                                    <div class="flex space-x-4">
+                                                        <label class="inline-flex items-center">
+                                                            <input type="radio" name="judgmentBasis4" class="w-4 h-4 text-primary">
+                                                            <span class="ml-2 text-sm text-gray-700">录音可判断</span>
+                                                        </label>
+                                                        <label class="inline-flex items-center">
+                                                            <input type="radio" name="judgmentBasis4" class="w-4 h-4 text-primary">
+                                                            <span class="ml-2 text-sm text-gray-700">与客人核实</span>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    <label class="block text-sm text-gray-700 mb-2">审核说明</label>
+                                                    <textarea rows="3" class="w-full px-3 py-2 border border-gray-300 rounded text-sm" placeholder="请输入审核说明..."></textarea>
+                                                </div>
+                                                <div>
+                                                    <label class="block text-sm text-gray-700 mb-2">修正分数</label>
+                                                    <input type="number" value="0" class="w-20 px-3 py-2 border border-gray-300 rounded text-sm">
+                                                    <span class="ml-2 text-sm text-gray-500">/ 0分</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 审核总结 -->
+                <div class="bg-white rounded-lg p-6 card-shadow">
+                    <h3 class="text-base font-medium mb-4">审核总结</h3>
+                    <div class="space-y-4">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="p-4 bg-gray-50 rounded">
+                                <p class="text-sm text-gray-500 mb-1">神秘客原得分</p>
+                                <p class="text-xl font-bold text-warning">85分</p>
+                            </div>
+                            <div class="p-4 bg-gray-50 rounded">
+                                <p class="text-sm text-gray-500 mb-1">审核后得分</p>
+                                <p class="text-xl font-bold text-primary">83分</p>
+                            </div>
+                            <div class="p-4 bg-gray-50 rounded">
+                                <p class="text-sm text-gray-500 mb-1">扣分题目数</p>
+                                <p class="text-xl font-bold text-danger">1题</p>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm text-gray-700 mb-2">总体评价</label>
+                            <textarea rows="4" class="w-full px-3 py-2 border border-gray-300 rounded text-sm" placeholder="请输入总体评价...">本次走访整体服务质量较好，客服响应及时，服务态度热情。存在个别服务环节未按标准执行的情况，已根据录音核实进行修正。建议门店加强对服务流程的标准化培训，确保所有服务环节都能达到规定要求。</textarea>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+    
+    <!-- 脚本 -->
+    <script>
+        // 侧边栏切换功能
+        document.getElementById('toggle-sidebar').addEventListener('click', function() {
+            const sidebar = document.querySelector('aside');
+            sidebar.classList.toggle('w-64');
+            sidebar.classList.toggle('w-20');
+            
+            // 隐藏或显示文字
+            const sidebarTexts = document.querySelectorAll('aside span');
+            sidebarTexts.forEach(text => {
+                text.classList.toggle('hidden');
+            });
+            
+            const sidebarTitles = document.querySelectorAll('aside .text-xs');
+            sidebarTitles.forEach(title => {
+                title.classList.toggle('hidden');
+            });
+            
+            const sidebarBrand = document.querySelector('aside h1');
+            sidebarBrand.classList.toggle('hidden');
+        });
+        
+        // 播放/暂停功能
+        const playPauseBtn = document.getElementById('playPauseBtn');
+        let isPlaying = false;
+        
+        playPauseBtn.addEventListener('click', function() {
+            isPlaying = !isPlaying;
+            if (isPlaying) {
+                playPauseBtn.innerHTML = '<i class="fa fa-pause text-xl"></i>';
+                // 模拟播放逻辑
+            } else {
+                playPauseBtn.innerHTML = '<i class="fa fa-play text-xl"></i>';
+                // 模拟暂停逻辑
+            }
+        });
+        
+        // 进度条拖动功能
+        const progressBar = document.getElementById('progressBar');
+        const progressHandle = document.getElementById('progressHandle');
+        const currentTime = document.getElementById('currentTime');
+        let isDragging = false;
+        
+        progressBar.parentElement.addEventListener('mousedown', function(e) {
+            isDragging = true;
+            updateProgress(e);
+        });
+        
+        document.addEventListener('mousemove', function(e) {
+            if (isDragging) {
+                updateProgress(e);
+            }
+        });
+        
+        document.addEventListener('mouseup', function() {
+            isDragging = false;
+        });
+        
+        function updateProgress(e) {
+            const progressContainer = progressBar.parentElement;
+            const rect = progressContainer.getBoundingClientRect();
+            const pos = (e.clientX - rect.left) / rect.width;
+            const percentage = Math.max(0, Math.min(1, pos));
+            
+            progressBar.style.width = percentage * 100 + '%';
+            progressHandle.style.left = percentage * 100 + '%';
+            
+            // 更新当前时间显示
+            const totalSeconds = 6300; // 1小时45分钟 = 6300秒
+            const currentSeconds = Math.floor(totalSeconds * percentage);
+            currentTime.textContent = formatTime(currentSeconds);
+        }
+        
+        function formatTime(seconds) {
+            const hours = Math.floor(seconds / 3600);
+            const minutes = Math.floor((seconds % 3600) / 60);
+            const secs = seconds % 60;
+            return [hours, minutes, secs].map(v => v.toString().padStart(2, '0')).join(':');
+        }
+        
+        // 添加时间戳功能
+        const addTimestampBtn = document.getElementById('addTimestampBtn');
+        
+        addTimestampBtn.addEventListener('click', function() {
+            // 模拟添加时间戳的逻辑
+            alert('时间戳已添加到当前选中题目');
+        });
+        
+        // 题目选中效果
+        const questionItems = document.querySelectorAll('.question-item');
+        questionItems.forEach(item => {
+            item.addEventListener('click', function() {
+                questionItems.forEach(i => i.classList.remove('question-item-active'));
+                this.classList.add('question-item-active');
+            });
+        });
+        
+        // 审核结果切换
+        const reviewResultRadios = document.querySelectorAll('input[name^="reviewResult"]');
+        reviewResultRadios.forEach(radio => {
+            radio.addEventListener('change', function() {
+                const questionItem = this.closest('.question-item');
+                const statusSpan = questionItem.querySelector('span[class*="rounded"]:last-child');
+                
+                if (this.value === '准确 (得分有效)') {
+                    statusSpan.className = 'ml-2 text-xs px-1.5 py-0.5 bg-success/10 text-success rounded';
+                    statusSpan.textContent = '已匹配';
+                } else {
+                    statusSpan.className = 'ml-2 text-xs px-1.5 py-0.5 bg-danger/10 text-danger rounded';
+                    statusSpan.textContent = '存疑';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

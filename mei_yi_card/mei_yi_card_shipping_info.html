@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>填写实物礼品卡信息</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#CFA389', // 渐变起始色
+                        secondary: '#A3684C', // 渐变结束色
+                        accent: '#fbbf24', // 金色辅助色
+                        background: '#ffffff', // 白色背景
+                        divider: '#f3f4f6', // 浅灰色分隔线
+                        text: {
+                            primary: '#1f2937',
+                            secondary: '#6b7280',
+                            light: '#9ca3af'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['PingFang SC', 'Helvetica Neue', 'Arial', 'sans-serif']
+                    },
+                    boxShadow: {
+                        'card': '0 2px 8px rgba(0, 0, 0, 0.08)',
+                        'bottom': '0 -2px 10px rgba(0, 0, 0, 0.05)'
+                    }
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .form-input {
+                @apply w-full bg-transparent border-none focus:ring-0 text-text-primary text-base;
+            }
+            .form-item {
+                @apply flex items-center justify-between py-4 border-b border-divider px-4;
+            }
+            .address-item {
+                @apply flex items-center justify-between py-4 border-b border-divider px-4;
+            }
+            .card-preview {
+                @apply relative w-full max-w-[256px] h-40 mx-auto rounded-lg overflow-hidden shadow-card;
+            }
+            .primary-gradient {
+                background: linear-gradient(to right, #CFA389, #A3684C);
+            }
+        }
+    </style>
+</head>
+<body class="bg-background text-text-primary font-sans min-h-screen">
+    <!-- 微信小程序尺寸容器 -->
+    <div class="max-w-md mx-auto relative">
+    <!-- 顶部导航栏 -->
+    <header class="sticky top-0 z-50 bg-background border-b border-divider">
+        <div class="flex items-center justify-between h-14 px-4">
+            <button id="backButton" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100">
+                <i class="fa fa-chevron-left text-text-primary"></i>
+            </button>
+            <h1 class="text-lg font-medium">填写实物礼品卡信息</h1>
+            <div class="w-8"></div> <!-- 占位，保持标题居中 -->
+        </div>
+    </header>
+
+    <!-- 主要内容区 -->
+    <main class="pb-24">
+        <!-- 卡面预览区 -->
+        <section class="py-6 px-4 bg-purple-50">
+            <h2 class="text-base text-text-secondary mb-4">卡面预览</h2>
+            <div class="card-preview primary-gradient">
+                <div class="absolute inset-0 flex flex-col items-center justify-center text-white p-4">
+                    <h3 class="text-xl font-bold mb-2">美意卡</h3>
+                    <p class="text-sm opacity-90">¥100 礼品卡</p>
+                    <p class="text-xs mt-6 opacity-80">实物卡 - 全国通用</p>
+                </div>
+            </div>
+            <p class="text-xs text-text-light mt-4 text-center">预计3-5个工作日送达</p>
+        </section>
+
+        <!-- 发货地址表单 -->
+        <section class="mt-4 bg-background">
+            <h2 class="text-base px-4 py-3 bg-gray-50 border-t border-divider">收货信息</h2>
+            
+            <!-- 收件人 -->
+            <div class="form-item">
+                <span class="text-text-secondary">收件人</span>
+                <input type="text" placeholder="请输入收件人姓名" class="form-input text-right">
+            </div>
+            
+            <!-- 联系电话 -->
+            <div class="form-item">
+                <span class="text-text-secondary">联系电话</span>
+                <input type="tel" placeholder="请输入联系电话" class="form-input text-right">
+            </div>
+            
+            <!-- 所在地区 -->
+            <div id="regionSelector" class="address-item">
+                <span class="text-text-secondary">所在地区</span>
+                <div class="flex items-center">
+                    <span id="selectedRegion" class="text-text-primary text-right mr-2">请选择省/市/区</span>
+                    <i class="fa fa-chevron-right text-text-light text-xs"></i>
+                </div>
+            </div>
+            
+            <!-- 详细地址 -->
+            <div class="px-4 py-4 border-b border-divider">
+                <span class="text-text-secondary block mb-2">详细地址</span>
+                <textarea placeholder="请输入详细地址信息，如道路、门牌号、小区、楼栋号、单元等" 
+                          class="w-full bg-transparent border-none focus:ring-0 text-text-primary text-base h-24 resize-none"></textarea>
+            </div>
+        </section>
+
+        <!-- 备注信息 -->
+        <section class="mt-4 bg-background">
+            <div class="px-4 py-4 border-b border-divider">
+                <span class="text-text-secondary block mb-2">备注信息</span>
+                <textarea placeholder="选填：如有特殊要求，请在此说明" 
+                          class="w-full bg-transparent border-none focus:ring-0 text-text-primary text-base h-16 resize-none"></textarea>
+            </div>
+        </section>
+    </main>
+
+    <!-- 底部固定操作栏 -->
+    <footer class="fixed bottom-0 left-0 right-0 bg-background border-t border-divider p-4 shadow-bottom max-w-md mx-auto">
+        <button id="submitOrderButton" class="w-full primary-gradient text-white py-3 rounded-full font-medium shadow-md transition-colors">
+            提交订单
+        </button>
+    </footer>
+
+    <!-- 地区选择模态框 (默认隐藏) -->
+    <div id="regionModal" class="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-end justify-center hidden">
+        <div class="bg-background max-w-md w-full rounded-t-xl max-h-[70vh] overflow-hidden mx-auto">
+            <div class="flex items-center justify-between p-4 border-b border-divider">
+                <button id="cancelRegionButton" class="text-text-secondary">取消</button>
+                <h3 class="font-medium">选择地区</h3>
+                <button id="confirmRegionButton" class="text-primary">确定</button>
+            </div>
+            <div class="p-4 max-h-[calc(70vh-6rem)] overflow-y-auto">
+                <div class="grid grid-cols-3 gap-4">
+                    <div class="p-3 border border-divider rounded-lg text-center">北京市</div>
+                    <div class="p-3 border border-divider rounded-lg text-center">上海市</div>
+                    <div class="p-3 border border-divider rounded-lg text-center">广东省</div>
+                    <div class="p-3 border border-divider rounded-lg text-center">江苏省</div>
+                    <div class="p-3 border border-divider rounded-lg text-center">浙江省</div>
+                    <div class="p-3 border border-divider rounded-lg text-center">四川省</div>
+                    <!-- 更多地区选项 -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 返回按钮点击事件
+        document.getElementById('backButton').addEventListener('click', function() {
+            // 实际项目中这里应该是返回上一页
+            alert('返回上一页');
+        });
+
+        // 地区选择器点击事件
+        document.getElementById('regionSelector').addEventListener('click', function() {
+            document.getElementById('regionModal').classList.remove('hidden');
+        });
+
+        // 取消选择地区
+        document.getElementById('cancelRegionButton').addEventListener('click', function() {
+            document.getElementById('regionModal').classList.add('hidden');
+        });
+
+        // 确认选择地区
+        document.getElementById('confirmRegionButton').addEventListener('click', function() {
+            // 实际项目中应该是获取选中的地区
+            document.getElementById('selectedRegion').textContent = '上海市 上海市 浦东新区';
+            document.getElementById('regionModal').classList.add('hidden');
+        });
+
+        // 提交订单按钮点击事件
+        document.getElementById('submitOrderButton').addEventListener('click', function() {
+            // 实际项目中这里应该是验证表单并提交订单
+            window.location.href = 'mei_yi_card_order_confirm.html';
+        });
+    </script>
+</body>
+</html>

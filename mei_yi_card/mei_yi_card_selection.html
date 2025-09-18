@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>美意卡 - 选择</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#CFA389', // 渐变起始色
+                        secondary: '#A3684C', // 渐变结束色
+                        accent: '#FFD700', // 金色点缀
+                        neutral: '#F5F5F5', // 浅灰色背景
+                        dark: '#333333', // 深灰色文字
+                    },
+                    fontFamily: {
+                        sans: ['PingFang SC', 'Helvetica Neue', 'Arial', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .scrollbar-hide {
+                -ms-overflow-style: none;
+                scrollbar-width: none;
+            }
+            .scrollbar-hide::-webkit-scrollbar {
+                display: none;
+            }
+            .card-shadow {
+                box-shadow: 0 2px 10px rgba(207, 163, 137, 0.1);
+            }
+            .tab-active {
+                color: #CFA389;
+                border-bottom: 2px solid #CFA389;
+            }
+            .card-selected {
+                border: 2px solid #CFA389;
+                background-color: rgba(207, 163, 137, 0.05);
+            }
+            .btn-disabled {
+                background-color: #CCCCCC;
+                color: #FFFFFF;
+            }
+            .primary-gradient {
+                background: linear-gradient(to right, #CFA389, #A3684C);
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans text-dark">
+    <!-- 微信小程序风格容器 -->
+    <div class="relative mx-auto max-w-md h-screen bg-white overflow-hidden flex flex-col">
+        <!-- 顶部导航栏 -->
+        <header class="sticky top-0 z-50 bg-white shadow-sm">
+            <div class="flex items-center justify-between h-14 px-4">
+                <button id="back-button" class="w-8 h-8 flex items-center justify-center">
+                    <i class="fa fa-arrow-left text-lg"></i>
+                </button>
+                <h1 class="text-lg font-medium">美意卡</h1>
+                <button id="rules-button" class="w-8 h-8 flex items-center justify-center">
+                    <i class="fa fa-question-circle text-lg text-gray-500"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- 主内容区 -->
+        <main class="flex-1 overflow-y-auto pb-20">
+            <!-- 轮播图/广告区 -->
+            <div class="relative h-40">
+                <img src="image/主KV/美意卡顶部主KV.png" alt="美意卡宣传图" class="w-full h-full object-cover">
+            </div>
+
+            <!-- 美意卡类型选择区 -->
+            <div class="px-4 py-5">
+                <h3 class="text-base font-medium mb-4">请选择美意卡类型</h3>
+                <div class="flex border-b border-gray-200">
+                    <button id="e-card-tab" class="tab-active py-2 px-4 text-sm font-medium mr-6">电子礼品卡</button>
+                    <button id="physical-card-tab" class="py-2 px-4 text-sm font-medium text-gray-500">实物礼品卡</button>
+                </div>
+            </div>
+
+            <!-- 电子礼品卡描述 -->
+            <div id="e-card-desc" class="px-4 pb-3">
+                <p class="text-xs text-gray-500">即时发送，立即使用，适合需要快速赠送的场景</p>
+            </div>
+
+            <!-- 实物礼品卡描述 -->
+            <div id="physical-card-desc" class="px-4 pb-3 hidden">
+                <p class="text-xs text-gray-500">精美定制卡面，专业包装，邮寄送达，适合重要节日礼物</p>
+            </div>
+
+            <!-- 卡面选择区 -->
+            <div class="px-4 py-4">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-base font-medium">请选择赠送的美意卡封面</h3>
+                    <span class="text-xs text-gray-500">左右滑动选择更多</span>
+                </div>
+                <div class="relative">
+                    <div id="card-covers" class="flex overflow-x-auto scrollbar-hide pb-2 space-x-3">
+                        <div class="cover-card card-selected flex-shrink-0 w-32 h-48 rounded-lg overflow-hidden relative flex items-center justify-center">
+                                <img src="image/电子礼品卡封面/封面1.jpg" alt="春日之约卡面" class="w-full h-full object-contain">
+                                <div class="absolute bottom-2 right-2 bg-white rounded-full w-6 h-6 flex items-center justify-center shadow-md">
+                                    <i class="fa fa-check text-primary text-xs"></i>
+                                </div>
+                            </div>
+                            <div class="cover-card flex-shrink-0 w-32 h-48 rounded-lg overflow-hidden relative flex items-center justify-center">
+                                <img src="image/电子礼品卡封面/封面2.jpg" alt="轻享春日卡面" class="w-full h-full object-contain">
+                            </div>
+                            <div class="cover-card flex-shrink-0 w-32 h-48 rounded-lg overflow-hidden relative flex items-center justify-center">
+                                <img src="image/电子礼品卡封面/封面3.jpg" alt="你与美天生一对卡面" class="w-full h-full object-contain">
+                            </div>
+                    </div>
+                    <!-- 滑动指示器 -->
+                    <div class="flex justify-center mt-3 space-x-1.5">
+                        <span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+                        <span class="w-1.5 h-1.5 rounded-full bg-gray-300"></span>
+                        <span class="w-1.5 h-1.5 rounded-full bg-gray-300"></span>
+                        <span class="w-1.5 h-1.5 rounded-full bg-gray-300"></span>
+                        <span class="w-1.5 h-1.5 rounded-full bg-gray-300"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 套餐选择区 -->
+            <div class="px-4 py-2">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-base font-medium">请选择赠送的美意卡套餐</h3>
+                    <a href="#" class="text-xs text-primary">我的购买记录</a>
+                </div>
+                
+                <!-- 套餐分类 -->
+                <div class="flex mb-4 space-x-3 overflow-x-auto scrollbar-hide">
+                    <button class="py-1.5 px-4 bg-primary text-white text-xs rounded-full whitespace-nowrap">全部</button>
+                    <button class="py-1.5 px-4 bg-gray-100 text-gray-600 text-xs rounded-full whitespace-nowrap">护理体验</button>
+                    <button class="py-1.5 px-4 bg-gray-100 text-gray-600 text-xs rounded-full whitespace-nowrap">护理畅享</button>
+                    <button class="py-1.5 px-4 bg-gray-100 text-gray-600 text-xs rounded-full whitespace-nowrap">奢华套餐</button>
+                </div>
+                
+                <!-- 套餐列表 -->
+                <div class="space-y-4">
+                    <!-- 轻夏鲜肌卡 -->
+                    <div class="package-card bg-white rounded-xl p-4 card-shadow">
+                        <div class="flex justify-between items-start mb-3">
+                            <div>
+                                <h4 class="font-medium">轻夏鲜肌卡</h4>
+                                <p class="text-xs text-gray-500 mt-1">清爽夏日，焕发肌肤活力</p>
+                            </div>
+                            <div class="text-primary font-bold">¥268</div>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs text-gray-500">夏季限定</span>
+                            <button class="text-xs text-primary">查看详情</button>
+                        </div>
+                    </div>
+                    <!-- 套餐1 -->
+                    <div class="package-card card-selected bg-white rounded-xl p-4 card-shadow">
+                        <div class="flex justify-between items-start mb-3">
+                            <div>
+                                <h4 class="font-medium">轻夏鲜肌卡(新客专享)</h4>
+                                <p class="text-xs text-gray-500 mt-1">此礼品卡仅限未在美丽田园消费过的新客领取</p>
+                            </div>
+                            <div class="text-primary font-bold">¥188</div>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs text-gray-500">特惠价</span>
+                            <button class="text-xs text-primary">查看详情</button>
+                        </div>
+                    </div>
+                    
+                    <!-- 套餐2 -->
+                    <div class="package-card bg-white rounded-xl p-4 card-shadow">
+                        <div class="flex justify-between items-start mb-3">
+                            <div>
+                                <h4 class="font-medium">水漾护理卡</h4>
+                                <p class="text-xs text-gray-500 mt-1">深层补水，焕发肌肤光彩</p>
+                            </div>
+                            <div class="text-primary font-bold">¥388</div>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs text-gray-500">标准价</span>
+                            <button class="text-xs text-primary">查看详情</button>
+                        </div>
+                    </div>
+                    
+                    <!-- 套餐3 -->
+                    <div class="package-card bg-white rounded-xl p-4 card-shadow">
+                        <div class="flex justify-between items-start mb-3">
+                            <div>
+                                <h4 class="font-medium">尊享SPA卡</h4>
+                                <p class="text-xs text-gray-500 mt-1">全身放松，尽享奢华体验</p>
+                            </div>
+                            <div class="text-primary font-bold">¥888</div>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs text-gray-500">标准价</span>
+                            <button class="text-xs text-primary">查看详情</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- 底部操作栏 -->
+        <footer class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white border-t border-gray-200 py-3 px-4">
+            <div class="flex justify-between items-center">
+                <div>
+                    <p class="text-xs text-gray-500">共<span id="selected-count" class="text-primary">0</span>件，合计：</p>
+                    <p class="text-lg font-bold text-primary">¥<span id="total-price">0</span></p>
+                </div>
+                <button id="next-button" class="btn-disabled w-36 h-12 rounded-full text-white font-medium">
+                    下一步
+                </button>
+            </div>
+        </footer>
+
+        <!-- 套餐详情弹窗 -->
+        <div id="package-detail-modal" class="fixed inset-0 bg-black/50 z-50 flex items-end justify-center hidden">
+            <div class="bg-white rounded-t-2xl w-full max-w-md p-5 transform transition-transform duration-300" id="modal-content">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-medium" id="modal-title">套餐详情</h3>
+                    <button id="close-modal" class="text-gray-500">
+                        <i class="fa fa-times text-lg"></i>
+                    </button>
+                </div>
+                <div id="modal-body" class="mb-6">
+                    <!-- 详情内容将通过JavaScript动态填充 -->
+                </div>
+                <button id="confirm-package" class="w-full h-12 bg-primary text-white rounded-full font-medium">
+                    确认选择
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 页面加载完成后执行
+        document.addEventListener('DOMContentLoaded', function() {
+            // 标签切换功能
+            const eCardTab = document.getElementById('e-card-tab');
+            const physicalCardTab = document.getElementById('physical-card-tab');
+            const eCardDesc = document.getElementById('e-card-desc');
+            const physicalCardDesc = document.getElementById('physical-card-desc');
+            const nextButton = document.getElementById('next-button');
+            const selectedCount = document.getElementById('selected-count');
+            const totalPrice = document.getElementById('total-price');
+            
+            // 当前选中的卡类型
+            let currentCardType = 'e-card';
+            // 当前选中的价格
+            let selectedPrice = 0;
+            
+            // 标签切换事件
+            eCardTab.addEventListener('click', function() {
+                eCardTab.classList.add('tab-active');
+                eCardTab.classList.remove('text-gray-500');
+                physicalCardTab.classList.remove('tab-active');
+                physicalCardTab.classList.add('text-gray-500');
+                eCardDesc.classList.remove('hidden');
+                physicalCardDesc.classList.add('hidden');
+                currentCardType = 'e-card';
+                updateButtonState();
+            });
+            
+            physicalCardTab.addEventListener('click', function() {
+                physicalCardTab.classList.add('tab-active');
+                physicalCardTab.classList.remove('text-gray-500');
+                eCardTab.classList.remove('tab-active');
+                eCardTab.classList.add('text-gray-500');
+                physicalCardDesc.classList.remove('hidden');
+                eCardDesc.classList.add('hidden');
+                currentCardType = 'physical-card';
+                updateButtonState();
+            });
+            
+            // 卡面选择功能
+            const coverCards = document.querySelectorAll('.cover-card');
+            coverCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    // 移除其他卡面的选中状态
+                    coverCards.forEach(c => c.classList.remove('card-selected'));
+                    // 添加当前卡面的选中状态
+                    this.classList.add('card-selected');
+                    updateButtonState();
+                });
+            });
+            
+            // 套餐选择功能
+            const packageCards = document.querySelectorAll('.package-card');
+            packageCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    // 移除其他套餐的选中状态
+                    packageCards.forEach(c => c.classList.remove('card-selected'));
+                    // 添加当前套餐的选中状态
+                    this.classList.add('card-selected');
+                    
+                    // 获取价格
+                    const priceElement = this.querySelector('.text-primary.font-bold');
+                    selectedPrice = parseInt(priceElement.textContent.replace('¥', ''));
+                    
+                    // 更新计数和总价
+                    selectedCount.textContent = 1;
+                    totalPrice.textContent = selectedPrice;
+                    
+                    updateButtonState();
+                });
+            });
+            
+            // 更新下一步按钮状态
+            function updateButtonState() {
+                const hasSelectedCard = document.querySelector('.cover-card.card-selected') !== null;
+                const hasSelectedPackage = document.querySelector('.package-card.card-selected') !== null;
+                
+                if (hasSelectedCard && hasSelectedPackage) {
+                    nextButton.classList.remove('btn-disabled');
+                    nextButton.classList.add('bg-primary');
+                    nextButton.disabled = false;
+                } else {
+                    nextButton.classList.add('btn-disabled');
+                    nextButton.classList.remove('bg-primary');
+                    nextButton.disabled = true;
+                }
+            }
+            
+            // 下一步按钮点击事件
+            nextButton.addEventListener('click', function() {
+                if (this.disabled) return;
+                
+                // 根据卡类型跳转到不同页面
+                if (currentCardType === 'e-card') {
+                    alert('电子礼品卡功能即将开放');
+                } else {
+                    window.location.href = 'mei_yi_card_shipping_info.html';
+                }
+            });
+            
+            // 返回按钮点击事件
+            document.getElementById('back-button').addEventListener('click', function() {
+                alert('返回上一页');
+            });
+            
+            // 规则按钮点击事件
+            document.getElementById('rules-button').addEventListener('click', function() {
+                alert('美意卡使用规则说明');
+            });
+            
+            // 套餐详情弹窗功能
+            const detailButtons = document.querySelectorAll('.package-card button');
+            const modal = document.getElementById('package-detail-modal');
+            const modalContent = document.getElementById('modal-content');
+            const modalTitle = document.getElementById('modal-title');
+            const modalBody = document.getElementById('modal-body');
+            const closeModal = document.getElementById('close-modal');
+            const confirmPackage = document.getElementById('confirm-package');
+            
+            detailButtons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.stopPropagation(); // 阻止事件冒泡
+                    
+                    const packageCard = this.closest('.package-card');
+                    const packageName = packageCard.querySelector('h4').textContent;
+                    const packagePrice = packageCard.querySelector('.text-primary.font-bold').textContent;
+                    
+                    // 设置弹窗内容
+                    modalTitle.textContent = packageName + ' - 详情';
+                    modalBody.innerHTML = `
+                        <div class="mb-4">
+                            <p class="text-sm mb-2">价格：${packagePrice}</p>
+                            <p class="text-xs text-gray-500 mb-3">有效期：自购买之日起12个月</p>
+                            <p class="text-sm font-medium mb-1">包含项目：</p>
+                            <ul class="text-xs text-gray-600 space-y-1">
+                                <li>• 面部深层清洁护理 1次</li>
+                                <li>• 精华导入护理 1次</li>
+                                <li>• 保湿面膜护理 1次</li>
+                                <li>• 肩颈按摩放松 15分钟</li>
+                            </ul>
+                        </div>
+                        <div class="text-xs text-gray-500 space-y-1">
+                            <p>使用说明：</p>
+                            <p>1. 此卡仅限美丽田园指定门店使用</p>
+                            <p>2. 请提前3天预约</p>
+                            <p>3. 最终解释权归美丽田园所有</p>
+                        </div>
+                    `;
+                    
+                    // 显示弹窗
+                    modal.classList.remove('hidden');
+                    setTimeout(() => {
+                        modalContent.classList.remove('translate-y-full');
+                    }, 10);
+                });
+            });
+            
+            // 关闭弹窗
+            closeModal.addEventListener('click', function() {
+                modalContent.classList.add('translate-y-full');
+                setTimeout(() => {
+                    modal.classList.add('hidden');
+                }, 300);
+            });
+            
+            // 确认选择套餐
+            confirmPackage.addEventListener('click', function() {
+                // 先选择对应的套餐卡片
+                const packageName = modalTitle.textContent.split(' - ')[0];
+                packageCards.forEach(card => {
+                    if (card.querySelector('h4').textContent === packageName) {
+                        card.click();
+                    }
+                });
+                
+                // 关闭弹窗
+                modalContent.classList.add('translate-y-full');
+                setTimeout(() => {
+                    modal.classList.add('hidden');
+                }, 300);
+            });
+        });
+    </script>
+</body>
+</html>

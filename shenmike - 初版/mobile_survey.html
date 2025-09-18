@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>神秘客走访门店 - 微信小程序</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#165DFF',
+                        secondary: '#4080FF',
+                        success: '#00B42A',
+                        warning: '#FF7D00',
+                        danger: '#F53F3F',
+                        info: '#86909C',
+                        light: '#F2F3F5',
+                        dark: '#1D2129',
+                    },
+                    fontFamily: {
+                        sans: ['PingFang SC', 'Helvetica Neue', 'Arial', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .wechat-shadow {
+                box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+            }
+            .form-item {
+                margin-bottom: 24px;
+            }
+            .radio-item {
+                position: relative;
+                padding-left: 36px;
+                margin-bottom: 12px;
+                line-height: 24px;
+            }
+            .radio-item input[type="radio"] {
+                position: absolute;
+                opacity: 0;
+            }
+            .radio-item .radio-check {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 24px;
+                height: 24px;
+                border: 1px solid #D9D9D9;
+                border-radius: 50%;
+                background-color: #fff;
+            }
+            .radio-item input[type="radio"]:checked + .radio-check {
+                border-color: #165DFF;
+                background-color: #fff;
+            }
+            .radio-item input[type="radio"]:checked + .radio-check::after {
+                content: '';
+                position: absolute;
+                left: 7px;
+                top: 7px;
+                width: 8px;
+                height: 8px;
+                border-radius: 50%;
+                background-color: #165DFF;
+            }
+            .checkbox-item {
+                position: relative;
+                padding-left: 36px;
+                margin-bottom: 12px;
+                line-height: 24px;
+            }
+            .checkbox-item input[type="checkbox"] {
+                position: absolute;
+                opacity: 0;
+            }
+            .checkbox-item .checkbox-check {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 24px;
+                height: 24px;
+                border: 1px solid #D9D9D9;
+                border-radius: 4px;
+                background-color: #fff;
+            }
+            .checkbox-item input[type="checkbox"]:checked + .checkbox-check {
+                border-color: #165DFF;
+                background-color: #165DFF;
+            }
+            .checkbox-item input[type="checkbox"]:checked + .checkbox-check::after {
+                content: '✓';
+                position: absolute;
+                left: 6px;
+                top: 0;
+                color: white;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans text-dark max-w-md mx-auto h-screen flex flex-col">
+    <!-- 页面容器 -->
+    <div class="flex-1 overflow-y-auto bg-white">
+        <!-- 顶部导航栏 -->
+        <div class="sticky top-0 z-10 bg-white border-b border-gray-200">
+            <div class="flex items-center justify-between h-14 px-4">
+                <button id="backBtn" class="text-gray-500">
+                    <i class="fa fa-chevron-left"></i>
+                </button>
+                <h1 class="text-lg font-medium">神秘客问卷</h1>
+                <div class="w-6"></div>
+            </div>
+            
+            <!-- 进度条 -->
+            <div class="px-4 pb-3">
+                <div class="flex items-center justify-between mb-1">
+                    <span class="text-xs text-gray-500">完成度</span>
+                    <span class="text-xs text-primary">3/15</span>
+                </div>
+                <div class="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                    <div class="h-full bg-primary rounded-full" style="width: 20%"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 表单内容 -->
+        <div class="p-4">
+            <!-- 走访信息 -->
+            <div class="bg-primary/5 rounded-lg p-4 mb-6">
+                <h2 class="text-base font-medium mb-3">走访信息</h2>
+                <div class="space-y-3">
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm text-gray-500">门店名称</span>
+                        <span class="text-sm font-medium">北京朝阳店</span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm text-gray-500">走访日期</span>
+                        <span class="text-sm font-medium">2023-08-10</span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm text-gray-500">走访轮次</span>
+                        <span class="text-sm font-medium">2023-Q3</span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm text-gray-500">项目名称</span>
+                        <span class="text-sm font-medium">元气肌护理</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 预约服务模块 -->
+            <div class="mb-8">
+                <div class="flex items-center mb-4">
+                    <div class="w-6 h-6 bg-primary text-white rounded-full flex items-center justify-center text-xs font-medium mr-2">1</div>
+                    <h2 class="text-base font-medium">预约服务</h2>
+                </div>
+                
+                <!-- 单选题 -->
+                <div class="form-item">
+                    <label class="block text-sm font-medium mb-2">
+                        1. 您是通过什么方式进行预约的？ <span class="text-danger">*</span>
+                    </label>
+                    <div class="radio-group">
+                        <div class="radio-item">
+                            <input type="radio" name="question1" id="q1a1">
+                            <label for="q1a1" class="text-sm cursor-pointer">
+                                <span class="radio-check"></span>
+                                电话预约
+                            </label>
+                        </div>
+                        <div class="radio-item">
+                            <input type="radio" name="question1" id="q1a2" checked>
+                            <label for="q1a2" class="text-sm cursor-pointer">
+                                <span class="radio-check"></span>
+                                微信公众号预约
+                            </label>
+                        </div>
+                        <div class="radio-item">
+                            <input type="radio" name="question1" id="q1a3">
+                            <label for="q1a3" class="text-sm cursor-pointer">
+                                <span class="radio-check"></span>
+                                到店直接预约
+                            </label>
+                        </div>
+                        <div class="radio-item">
+                            <input type="radio" name="question1" id="q1a4">
+                            <label for="q1a4" class="text-sm cursor-pointer">
+                                <span class="radio-check"></span>
+                                其他方式
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 单选题 -->
+                <div class="form-item">
+                    <label class="block text-sm font-medium mb-2">
+                        2. 预约过程是否顺畅？ <span class="text-danger">*</span>
+                    </label>
+                    <div class="radio-group">
+                        <div class="radio-item">
+                            <input type="radio" name="question2" id="q2a1">
+                            <label for="q2a1" class="text-sm cursor-pointer">
+                                <span class="radio-check"></span>
+                                非常顺畅，一次成功
+                            </label>
+                        </div>
+                        <div class="radio-item">
+                            <input type="radio" name="question2" id="q2a2" checked>
+                            <label for="q2a2" class="text-sm cursor-pointer">
+                                <span class="radio-check"></span>
+                                比较顺畅，需要稍作等待
+                            </label>
+                        </div>
+                        <div class="radio-item">
+                            <input type="radio" name="question2" id="q2a3">
+                            <label for="q2a3" class="text-sm cursor-pointer">
+                                <span class="radio-check"></span>
+                                不太顺畅，需要多次尝试
+                            </label>
+                        </div>
+                        <div class="radio-item">
+                            <input type="radio" name="question2" id="q2a4">
+                            <label for="q2a4" class="text-sm cursor-pointer">
+                                <span class="radio-check"></span>
+                                非常不顺畅
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 多选题 -->
+                <div class="form-item">
+                    <label class="block text-sm font-medium mb-2">
+                        3. 预约时，客服是否向您确认了以下信息？（可多选） <span class="text-danger">*</span>
+                    </label>
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="checkbox" name="question3" id="q3a1" checked>
+                            <label for="q3a1" class="text-sm cursor-pointer">
+                                <span class="checkbox-check"></span>
+                                姓名
+                            </label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" name="question3" id="q3a2" checked>
+                            <label for="q3a2" class="text-sm cursor-pointer">
+                                <span class="checkbox-check"></span>
+                                联系电话
+                            </label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" name="question3" id="q3a3">
+                            <label for="q3a3" class="text-sm cursor-pointer">
+                                <span class="checkbox-check"></span>
+                                服务项目
+                            </label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" name="question3" id="q3a4" checked>
+                            <label for="q3a4" class="text-sm cursor-pointer">
+                                <span class="checkbox-check"></span>
+                                预约时间
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 护理前接待模块 -->
+            <div class="mb-8">
+                <div class="flex items-center mb-4">
+                    <div class="w-6 h-6 bg-primary text-white rounded-full flex items-center justify-center text-xs font-medium mr-2">2</div>
+                    <h2 class="text-base font-medium">护理前接待</h2>
+                </div>
+                
+                <!-- 单选题 -->
+                <div class="form-item">
+                    <label class="block text-sm font-medium mb-2">
+                        4. 您到达门店后，服务人员是否在1分钟内接待您？ <span class="text-danger">*</span>
+                    </label>
+                    <div class="radio-group">
+                        <div class="radio-item">
+                            <input type="radio" name="question4" id="q4a1" checked>
+                            <label for="q4a1" class="text-sm cursor-pointer">
+                                <span class="radio-check"></span>
+                                是
+                            </label>
+                        </div>
+                        <div class="radio-item">
+                            <input type="radio" name="question4" id="q4a2">
+                            <label for="q4a2" class="text-sm cursor-pointer">
+                                <span class="radio-check"></span>
+                                否，等待了超过1分钟
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 评分题 -->
+                <div class="form-item">
+                    <label class="block text-sm font-medium mb-3">
+                        5. 请对服务人员的接待态度进行评分 <span class="text-danger">*</span>
+                    </label>
+                    <div class="flex items-center justify-between">
+                        <div class="flex">
+                            <i class="fa fa-star text-primary text-xl"></i>
+                            <i class="fa fa-star text-primary text-xl ml-2"></i>
+                            <i class="fa fa-star text-primary text-xl ml-2"></i>
+                            <i class="fa fa-star-o text-gray-300 text-xl ml-2"></i>
+                            <i class="fa fa-star-o text-gray-300 text-xl ml-2"></i>
+                        </div>
+                        <span class="text-sm text-gray-500">3分</span>
+                    </div>
+                </div>
+                
+                <!-- 多选题带填空 -->
+                <div class="form-item">
+                    <label class="block text-sm font-medium mb-2">
+                        6. 护理前接待流程中，服务人员提供了哪些服务？（可多选） <span class="text-danger">*</span>
+                    </label>
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="checkbox" name="question6" id="q6a1" checked>
+                            <label for="q6a1" class="text-sm cursor-pointer">
+                                <span class="checkbox-check"></span>
+                                热情问候 <span class="text-xs text-gray-500">(3分)</span>
+                            </label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" name="question6" id="q6a2" checked>
+                            <label for="q6a2" class="text-sm cursor-pointer">
+                                <span class="checkbox-check"></span>
+                                递上茶水 <span class="text-xs text-gray-500">(2分)</span>
+                            </label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" name="question6" id="q6a3">
+                            <label for="q6a3" class="text-sm cursor-pointer">
+                                <span class="checkbox-check"></span>
+                                引导入座
+                            </label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" name="question6" id="q6a4">
+                            <label for="q6a4" class="text-sm cursor-pointer">
+                                <span class="checkbox-check"></span>
+                                其他服务
+                                <input type="text" placeholder="请输入" class="ml-2 px-2 py-1 border border-gray-200 rounded text-xs w-32">
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 填空题 -->
+                <div class="form-item">
+                    <label class="block text-sm font-medium mb-2">
+                        7. 请简要描述护理前的接待流程 <span class="text-danger">*</span>
+                    </label>
+                    <textarea rows="3" placeholder="请输入您的描述" class="w-full px-3 py-2 border border-gray-200 rounded text-sm" style="resize: none;">服务人员热情迎接，引导至休息区，询问了我的需求并提供了茶水服务。</textarea>
+                </div>
+                
+                <!-- 录音题 -->
+                <div class="form-item">
+                    <label class="block text-sm font-medium mb-3">
+                        8. 请上传护理前接待的录音 <span class="text-danger">*</span>
+                    </label>
+                    <div class="flex justify-center">
+                        <div id="recordingBtn" class="w-16 h-16 bg-primary text-white rounded-full flex items-center justify-center cursor-pointer">
+                            <i class="fa fa-microphone text-xl"></i>
+                        </div>
+                    </div>
+                    <p class="text-xs text-gray-500 text-center mt-2">点击开始录音，再次点击停止</p>
+                    
+                    <!-- 已上传录音 -->
+                    <div id="recordingPlayback" class="mt-3 p-3 bg-gray-50 rounded-lg">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <i class="fa fa-file-audio-o text-primary mr-2"></i>
+                                <span class="text-sm">护理前接待录音.mp3</span>
+                            </div>
+                            <div class="flex items-center space-x-3">
+                                <span class="text-xs text-gray-500">02:15</span>
+                                <button id="playRecording" class="text-primary">
+                                    <i class="fa fa-play"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 图片上传题 -->
+                <div class="form-item">
+                    <label class="block text-sm font-medium mb-3">
+                        9. 请上传门店环境照片 <span class="text-danger">*</span>
+                    </label>
+                    <div class="grid grid-cols-3 gap-2">
+                        <div class="aspect-square bg-gray-100 rounded-lg flex items-center justify-center border border-dashed border-gray-300">
+                            <i class="fa fa-camera text-gray-400"></i>
+                        </div>
+                        <div class="aspect-square rounded-lg overflow-hidden relative">
+                            <img src="https://picsum.photos/id/237/200/200" alt="门店环境" class="w-full h-full object-cover">
+                            <button class="absolute top-1 right-1 w-5 h-5 bg-black/50 rounded-full flex items-center justify-center text-white">
+                                <i class="fa fa-times text-xs"></i>
+                            </button>
+                        </div>
+                        <div class="aspect-square rounded-lg overflow-hidden relative">
+                            <img src="https://picsum.photos/id/238/200/200" alt="门店环境" class="w-full h-full object-cover">
+                            <button class="absolute top-1 right-1 w-5 h-5 bg-black/50 rounded-full flex items-center justify-center text-white">
+                                <i class="fa fa-times text-xs"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-2">最多上传5张照片</p>
+                </div>
+            </div>
+            
+            <!-- 护理体验模块（部分显示，其他通过条件跳转控制） -->
+            <div class="mb-8">
+                <div class="flex items-center mb-4">
+                    <div class="w-6 h-6 bg-gray-300 text-white rounded-full flex items-center justify-center text-xs font-medium mr-2">3</div>
+                    <h2 class="text-base font-medium text-gray-500">护理体验</h2>
+                </div>
+                
+                <div class="p-4 bg-gray-50 rounded-lg text-center">
+                    <p class="text-sm text-gray-500">完成前面的问题后才能继续</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 底部操作栏 -->
+    <div class="wechat-shadow bg-white p-4">
+        <div class="flex items-center justify-between mb-3">
+            <div class="text-sm text-gray-500">
+                已完成 <span class="text-primary font-medium">6</span> 题，共 <span class="font-medium">15</span> 题
+            </div>
+            <button id="saveDraftBtn" class="text-sm text-primary">
+                <i class="fa fa-save mr-1"></i>保存草稿
+            </button>
+        </div>
+        <button id="nextBtn" class="w-full bg-primary text-white py-3 rounded-lg font-medium">
+            下一页
+        </button>
+    </div>
+    
+    <!-- 提交确认弹窗 -->
+    <div id="submitModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg w-4/5 p-5">
+            <h3 class="text-lg font-medium text-center mb-3">提交确认</h3>
+            <p class="text-sm text-gray-700 text-center mb-5">
+                问卷尚未完成，确定要提交当前进度吗？<br>
+                提交后将无法修改。
+            </p>
+            <div class="flex space-x-3">
+                <button id="cancelSubmitBtn" class="flex-1 py-2.5 border border-gray-300 rounded-lg text-gray-700 font-medium">
+                    取消
+                </button>
+                <button id="confirmSubmitBtn" class="flex-1 py-2.5 bg-primary text-white rounded-lg font-medium">
+                    确认提交
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 保存成功提示 -->
+    <div id="saveToast" class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-black/70 text-white px-4 py-2 rounded-lg text-sm hidden">
+        草稿保存成功
+    </div>
+    
+    <!-- 录音中提示 -->
+    <div id="recordingToast" class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-black/70 text-white px-4 py-2 rounded-lg text-sm hidden">
+        <i class="fa fa-microphone mr-1"></i>录音中...
+    </div>
+    
+    <!-- 脚本 -->
+    <script>
+        // 返回按钮
+        document.getElementById('backBtn').addEventListener('click', function() {
+            if (confirm('确定要离开当前页面吗？未保存的内容可能会丢失。')) {
+                // 模拟返回上一页
+                console.log('返回上一页');
+            }
+        });
+        
+        // 下一页按钮
+        document.getElementById('nextBtn').addEventListener('click', function() {
+            // 模拟校验必填项
+            const isAllRequiredFilled = true; // 假设所有必填项都已填写
+            
+            if (isAllRequiredFilled) {
+                // 模拟跳转到下一页
+                console.log('跳转到下一页');
+                alert('这里将跳转到下一页，由于是单页面原型，此处仅做提示');
+            } else {
+                alert('请完成所有必填项后再继续');
+            }
+        });
+        
+        // 保存草稿按钮
+        document.getElementById('saveDraftBtn').addEventListener('click', function() {
+            // 模拟保存草稿
+            const saveToast = document.getElementById('saveToast');
+            saveToast.classList.remove('hidden');
+            
+            setTimeout(function() {
+                saveToast.classList.add('hidden');
+            }, 2000);
+        });
+        
+        // 录音按钮
+        let isRecording = false;
+        document.getElementById('recordingBtn').addEventListener('click', function() {
+            isRecording = !isRecording;
+            const recordingToast = document.getElementById('recordingToast');
+            
+            if (isRecording) {
+                this.classList.remove('bg-primary');
+                this.classList.add('bg-danger');
+                recordingToast.classList.remove('hidden');
+            } else {
+                this.classList.remove('bg-danger');
+                this.classList.add('bg-primary');
+                recordingToast.classList.add('hidden');
+            }
+        });
+        
+        // 播放录音
+        document.getElementById('playRecording').addEventListener('click', function() {
+            // 切换播放/暂停图标
+            const icon = this.querySelector('i');
+            if (icon.classList.contains('fa-play')) {
+                icon.classList.remove('fa-play');
+                icon.classList.add('fa-pause');
+            } else {
+                icon.classList.remove('fa-pause');
+                icon.classList.add('fa-play');
+            }
+        });
+        
+        // 提交确认弹窗
+        const submitModal = document.getElementById('submitModal');
+        const cancelSubmitBtn = document.getElementById('cancelSubmitBtn');
+        const confirmSubmitBtn = document.getElementById('confirmSubmitBtn');
+        
+        // 模拟提交操作
+        // 在实际应用中，这里会有一个提交按钮
+        function openSubmitModal() {
+            submitModal.classList.remove('hidden');
+        }
+        
+        cancelSubmitBtn.addEventListener('click', function() {
+            submitModal.classList.add('hidden');
+        });
+        
+        confirmSubmitBtn.addEventListener('click', function() {
+            submitModal.classList.add('hidden');
+            // 模拟提交成功
+            alert('问卷提交成功，等待审核！');
+        });
+        
+        // 点击弹窗外部关闭
+        submitModal.addEventListener('click', function(e) {
+            if (e.target === submitModal) {
+                submitModal.classList.add('hidden');
+            }
+        });
+        
+        // 自动保存功能（模拟）
+        function autoSave() {
+            console.log('自动保存问卷进度');
+        }
+        
+        // 每30秒自动保存一次
+        setInterval(autoSave, 30000);
+        
+        // 页面离开前提示
+        window.addEventListener('beforeunload', function(e) {
+            // 取消事件
+            e.preventDefault();
+            // Chrome需要设置returnValue
+            e.returnValue = '';
+            return '';
+        });
+    </script>
+</body>
+</html>

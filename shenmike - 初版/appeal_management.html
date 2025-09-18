@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>神秘客走访门店管理系统 - 申诉管理</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#165DFF',
+                        secondary: '#4080FF',
+                        success: '#00B42A',
+                        warning: '#FF7D00',
+                        danger: '#F53F3F',
+                        info: '#86909C',
+                        light: '#F2F3F5',
+                        dark: '#1D2129',
+                    },
+                    fontFamily: {
+                        sans: ['PingFang SC', 'Helvetica Neue', 'Arial', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .sidebar-item-active {
+                background-color: #E8F3FF;
+                color: #165DFF;
+                border-right: 3px solid #165DFF;
+            }
+            .card-shadow {
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            }
+            .pagination-item {
+                min-width: 32px;
+                height: 32px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border-radius: 4px;
+                margin: 0 4px;
+                transition: all 0.3s ease;
+            }
+            .pagination-item:hover:not(:disabled) {
+                background-color: #E8F3FF;
+                color: #165DFF;
+            }
+            .pagination-item.active {
+                background-color: #165DFF;
+                color: white;
+            }
+            .pagination-item:disabled {
+                opacity: 0.5;
+                cursor: not-allowed;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans text-dark">
+    <div class="flex h-screen overflow-hidden">
+        <!-- 侧边栏 -->
+        <aside class="w-64 bg-white h-full shadow-md flex-shrink-0">
+            <!-- 系统标题 -->
+            <div class="h-16 flex items-center justify-center border-b border-gray-200">
+                <h1 class="text-xl font-bold text-primary">神秘客走访系统</h1>
+            </div>
+            
+            <!-- 侧边菜单 -->
+            <nav class="py-4">
+                <div class="px-4 py-2 text-xs font-medium text-gray-500">系统管理</div>
+                <a href="#" class="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50">
+                    <i class="fa fa-tachometer w-6"></i>
+                    <span>控制台</span>
+                </a>
+                
+                <div class="px-4 py-2 text-xs font-medium text-gray-500 mt-4">问卷管理</div>
+                <a href="#" class="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50">
+                    <i class="fa fa-file-text w-6"></i>
+                    <span>问卷设计</span>
+                </a>
+                <a href="#" class="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50">
+                    <i class="fa fa-th-large w-6"></i>
+                    <span>问卷模板</span>
+                </a>
+                
+                <div class="px-4 py-2 text-xs font-medium text-gray-500 mt-4">审核管理</div>
+                <a href="#" class="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50">
+                    <i class="fa fa-headphones w-6"></i>
+                    <span>录音审核</span>
+                </a>
+                <a href="#" class="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50">
+                    <i class="fa fa-check-square w-6"></i>
+                    <span>任务分配</span>
+                </a>
+                
+                <div class="px-4 py-2 text-xs font-medium text-gray-500 mt-4">成绩管理</div>
+                <a href="#" class="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50">
+                    <i class="fa fa-bar-chart w-6"></i>
+                    <span>成绩统计</span>
+                </a>
+                <a href="#" class="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50">
+                    <i class="fa fa-file-excel-o w-6"></i>
+                    <span>报告导出</span>
+                </a>
+                
+                <div class="px-4 py-2 text-xs font-medium text-gray-500 mt-4">门店管理</div>
+                <a href="#" class="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50">
+                    <i class="fa fa-building w-6"></i>
+                    <span>门店信息</span>
+                </a>
+                <a href="#" class="flex items-center px-4 py-3 text-sm sidebar-item-active">
+                    <i class="fa fa-gavel w-6"></i>
+                    <span>申诉管理</span>
+                </a>
+                
+                <div class="px-4 py-2 text-xs font-medium text-gray-500 mt-4">用户管理</div>
+                <a href="#" class="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50">
+                    <i class="fa fa-users w-6"></i>
+                    <span>用户列表</span>
+                </a>
+                <a href="#" class="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50">
+                    <i class="fa fa-key w-6"></i>
+                    <span>角色权限</span>
+                </a>
+            </nav>
+        </aside>
+        
+        <!-- 主内容区 -->
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <!-- 顶部导航栏 -->
+            <header class="h-16 bg-white shadow-sm flex items-center justify-between px-6">
+                <div class="flex items-center">
+                    <button id="toggle-sidebar" class="mr-4 text-gray-500 hover:text-primary">
+                        <i class="fa fa-bars text-xl"></i>
+                    </button>
+                    <div class="flex items-center space-x-2">
+                        <h2 class="text-lg font-medium">申诉管理</h2>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="flex items-center border border-gray-200 rounded px-3 py-1.5">
+                        <i class="fa fa-search text-gray-400 mr-2"></i>
+                        <input type="text" placeholder="搜索申诉单号、门店名称..." class="text-sm outline-none w-40">
+                    </div>
+                    <button class="relative text-gray-500 hover:text-primary">
+                        <i class="fa fa-bell text-xl"></i>
+                        <span class="absolute -top-1 -right-1 w-4 h-4 bg-danger rounded-full text-white text-xs flex items-center justify-center">3</span>
+                    </button>
+                    <div class="flex items-center">
+                        <img src="https://picsum.photos/id/1012/40/40" alt="用户头像" class="w-8 h-8 rounded-full object-cover mr-2">
+                        <span class="text-sm font-medium">管理员</span>
+                        <i class="fa fa-angle-down ml-2 text-gray-500"></i>
+                    </div>
+                </div>
+            </header>
+            
+            <!-- 内容区域 -->
+            <main class="flex-1 overflow-y-auto p-6">
+                <!-- 统计卡片 -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+                    <div class="bg-white rounded-lg p-6 card-shadow">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-sm text-gray-500">待处理申诉</h3>
+                            <span class="w-8 h-8 rounded-full bg-warning/10 flex items-center justify-center text-warning">
+                                <i class="fa fa-clock-o"></i>
+                            </span>
+                        </div>
+                        <p class="text-3xl font-bold">12</p>
+                        <div class="flex items-center mt-2 text-xs text-success">
+                            <i class="fa fa-arrow-up mr-1"></i>
+                            <span>较上周增长20%</span>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg p-6 card-shadow">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-sm text-gray-500">已处理申诉</h3>
+                            <span class="w-8 h-8 rounded-full bg-success/10 flex items-center justify-center text-success">
+                                <i class="fa fa-check-circle"></i>
+                            </span>
+                        </div>
+                        <p class="text-3xl font-bold">48</p>
+                        <div class="flex items-center mt-2 text-xs text-success">
+                            <i class="fa fa-arrow-up mr-1"></i>
+                            <span>较上周增长15%</span>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg p-6 card-shadow">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-sm text-gray-500">申诉成功</h3>
+                            <span class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                                <i class="fa fa-thumbs-up"></i>
+                            </span>
+                        </div>
+                        <p class="text-3xl font-bold">18</p>
+                        <div class="flex items-center mt-2 text-xs text-danger">
+                            <i class="fa fa-arrow-down mr-1"></i>
+                            <span>较上周下降5%</span>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg p-6 card-shadow">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-sm text-gray-500">申诉失败</h3>
+                            <span class="w-8 h-8 rounded-full bg-danger/10 flex items-center justify-center text-danger">
+                                <i class="fa fa-thumbs-down"></i>
+                            </span>
+                        </div>
+                        <p class="text-3xl font-bold">30</p>
+                        <div class="flex items-center mt-2 text-xs text-success">
+                            <i class="fa fa-arrow-up mr-1"></i>
+                            <span>较上周增长10%</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 申诉列表 -->
+                <div class="bg-white rounded-lg card-shadow mb-6">
+                    <div class="flex flex-col md:flex-row md:items-center md:justify-between p-6 border-b border-gray-200">
+                        <h3 class="text-base font-medium">申诉列表</h3>
+                        <div class="flex flex-wrap items-center gap-4 mt-4 md:mt-0">
+                            <div class="flex items-center space-x-2">
+                                <span class="text-sm text-gray-500">状态：</span>
+                                <select class="text-sm border border-gray-300 rounded px-3 py-1.5 focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary">
+                                    <option value="all">全部</option>
+                                    <option value="pending">待处理</option>
+                                    <option value="approved">申诉成功</option>
+                                    <option value="rejected">申诉失败</option>
+                                </select>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <span class="text-sm text-gray-500">轮次：</span>
+                                <select class="text-sm border border-gray-300 rounded px-3 py-1.5 focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary">
+                                    <option value="all">全部</option>
+                                    <option value="2023-Q3">2023-Q3</option>
+                                    <option value="2023-Q2">2023-Q2</option>
+                                    <option value="2023-Q1">2023-Q1</option>
+                                </select>
+                            </div>
+                            <button class="px-4 py-1.5 bg-primary text-white rounded text-sm hover:bg-primary/90">
+                                <i class="fa fa-filter mr-1"></i>筛选
+                            </button>
+                            <button class="px-4 py-1.5 border border-gray-300 rounded text-sm text-gray-700 hover:bg-gray-50">
+                                <i class="fa fa-download mr-1"></i>导出
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm">
+                            <thead>
+                                <tr class="bg-gray-50 border-b border-gray-200">
+                                    <th class="py-3 px-4 text-left font-medium text-gray-500">
+                                        <div class="flex items-center">
+                                            <input type="checkbox" class="w-4 h-4 text-primary">
+                                            <span class="ml-2">申诉单号</span>
+                                        </div>
+                                    </th>
+                                    <th class="py-3 px-4 text-left font-medium text-gray-500">门店名称</th>
+                                    <th class="py-3 px-4 text-left font-medium text-gray-500">走访轮次</th>
+                                    <th class="py-3 px-4 text-left font-medium text-gray-500">申诉模块</th>
+                                    <th class="py-3 px-4 text-left font-medium text-gray-500">申诉题目数</th>
+                                    <th class="py-3 px-4 text-left font-medium text-gray-500">申诉人</th>
+                                    <th class="py-3 px-4 text-left font-medium text-gray-500">提交时间</th>
+                                    <th class="py-3 px-4 text-left font-medium text-gray-500">状态</th>
+                                    <th class="py-3 px-4 text-left font-medium text-gray-500">操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="border-b border-gray-100 hover:bg-gray-50">
+                                    <td class="py-3 px-4">
+                                        <div class="flex items-center">
+                                            <input type="checkbox" class="w-4 h-4 text-primary">
+                                            <span class="ml-2">AP202308100001</span>
+                                        </div>
+                                    </td>
+                                    <td class="py-3 px-4">北京朝阳店</td>
+                                    <td class="py-3 px-4">2023-Q3</td>
+                                    <td class="py-3 px-4">护理前接待</td>
+                                    <td class="py-3 px-4">2</td>
+                                    <td class="py-3 px-4">张经理</td>
+                                    <td class="py-3 px-4">2023-08-10 09:25:36</td>
+                                    <td class="py-3 px-4">
+                                        <span class="px-2 py-1 text-xs bg-warning/10 text-warning rounded-full">待处理</span>
+                                    </td>
+                                    <td class="py-3 px-4">
+                                        <div class="flex space-x-2">
+                                            <button class="text-primary hover:text-primary/80 view-appeal" data-id="AP202308100001">
+                                                <i class="fa fa-eye mr-1"></i>查看
+                                            </button>
+                                            <button class="text-gray-500 hover:text-gray-700">
+                                                <i class="fa fa-download mr-1"></i>下载凭证
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr class="border-b border-gray-100 hover:bg-gray-50">
+                                    <td class="py-3 px-4">
+                                        <div class="flex items-center">
+                                            <input type="checkbox" class="w-4 h-4 text-primary">
+                                            <span class="ml-2">AP202308090002</span>
+                                        </div>
+                                    </td>
+                                    <td class="py-3 px-4">上海浦东店</td>
+                                    <td class="py-3 px-4">2023-Q3</td>
+                                    <td class="py-3 px-4">护理体验</td>
+                                    <td class="py-3 px-4">1</td>
+                                    <td class="py-3 px-4">李店长</td>
+                                    <td class="py-3 px-4">2023-08-09 15:40:21</td>
+                                    <td class="py-3 px-4">
+                                        <span class="px-2 py-1 text-xs bg-warning/10 text-warning rounded-full">待处理</span>
+                                    </td>
+                                    <td class="py-3 px-4">
+                                        <div class="flex space-x-2">
+                                            <button class="text-primary hover:text-primary/80 view-appeal" data-id="AP202308090002">
+                                                <i class="fa fa-eye mr-1"></i>查看
+                                            </button>
+                                            <button class="text-gray-500 hover:text-gray-700">
+                                                <i class="fa fa-download mr-1"></i>下载凭证
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr class="border-b border-gray-100 hover:bg-gray-50">
+                                    <td class="py-3 px-4">
+                                        <div class="flex items-center">
+                                            <input type="checkbox" class="w-4 h-4 text-primary">
+                                            <span class="ml-2">AP202308080003</span>
+                                        </div>
+                                    </td>
+                                    <td class="py-3 px-4">广州天河店</td>
+                                    <td class="py-3 px-4">2023-Q3</td>
+                                    <td class="py-3 px-4">预约服务</td>
+                                    <td class="py-3 px-4">1</td>
+                                    <td class="py-3 px-4">王经理</td>
+                                    <td class="py-3 px-4">2023-08-08 11:30:15</td>
+                                    <td class="py-3 px-4">
+                                        <span class="px-2 py-1 text-xs bg-success/10 text-success rounded-full">申诉成功</span>
+                                    </td>
+                                    <td class="py-3 px-4">
+                                        <div class="flex space-x-2">
+                                            <button class="text-primary hover:text-primary/80 view-appeal" data-id="AP202308080003">
+                                                <i class="fa fa-eye mr-1"></i>查看
+                                            </button>
+                                            <button class="text-gray-500 hover:text-gray-700">
+                                                <i class="fa fa-download mr-1"></i>下载凭证
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr class="border-b border-gray-100 hover:bg-gray-50">
+                                    <td class="py-3 px-4">
+                                        <div class="flex items-center">
+                                            <input type="checkbox" class="w-4 h-4 text-primary">
+                                            <span class="ml-2">AP202308070004</span>
+                                        </div>
+                                    </td>
+                                    <td class="py-3 px-4">深圳南山店</td>
+                                    <td class="py-3 px-4">2023-Q3</td>
+                                    <td class="py-3 px-4">护理后接待</td>
+                                    <td class="py-3 px-4">3</td>
+                                    <td class="py-3 px-4">赵店长</td>
+                                    <td class="py-3 px-4">2023-08-07 16:15:48</td>
+                                    <td class="py-3 px-4">
+                                        <span class="px-2 py-1 text-xs bg-danger/10 text-danger rounded-full">申诉失败</span>
+                                    </td>
+                                    <td class="py-3 px-4">
+                                        <div class="flex space-x-2">
+                                            <button class="text-primary hover:text-primary/80 view-appeal" data-id="AP202308070004">
+                                                <i class="fa fa-eye mr-1"></i>查看
+                                            </button>
+                                            <button class="text-gray-500 hover:text-gray-700">
+                                                <i class="fa fa-download mr-1"></i>下载凭证
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr class="border-b border-gray-100 hover:bg-gray-50">
+                                    <td class="py-3 px-4">
+                                        <div class="flex items-center">
+                                            <input type="checkbox" class="w-4 h-4 text-primary">
+                                            <span class="ml-2">AP202308060005</span>
+                                        </div>
+                                    </td>
+                                    <td class="py-3 px-4">杭州西湖店</td>
+                                    <td class="py-3 px-4">2023-Q3</td>
+                                    <td class="py-3 px-4">护理体验</td>
+                                    <td class="py-3 px-4">1</td>
+                                    <td class="py-3 px-4">钱经理</td>
+                                    <td class="py-3 px-4">2023-08-06 10:55:22</td>
+                                    <td class="py-3 px-4">
+                                        <span class="px-2 py-1 text-xs bg-warning/10 text-warning rounded-full">待处理</span>
+                                    </td>
+                                    <td class="py-3 px-4">
+                                        <div class="flex space-x-2">
+                                            <button class="text-primary hover:text-primary/80 view-appeal" data-id="AP202308060005">
+                                                <i class="fa fa-eye mr-1"></i>查看
+                                            </button>
+                                            <button class="text-gray-500 hover:text-gray-700">
+                                                <i class="fa fa-download mr-1"></i>下载凭证
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- 分页 -->
+                    <div class="flex flex-col md:flex-row md:items-center md:justify-between p-4 border-t border-gray-200">
+                        <div class="text-sm text-gray-500 mb-4 md:mb-0">
+                            共 <span class="font-medium text-primary">60</span> 条记录，当前显示第 <span class="font-medium text-primary">1-5</span> 条
+                        </div>
+                        <div class="flex items-center">
+                            <button class="pagination-item text-sm text-gray-500" disabled>
+                                <i class="fa fa-angle-left"></i>
+                            </button>
+                            <button class="pagination-item text-sm active">1</button>
+                            <button class="pagination-item text-sm text-gray-700">2</button>
+                            <button class="pagination-item text-sm text-gray-700">3</button>
+                            <button class="pagination-item text-sm text-gray-700">4</button>
+                            <button class="pagination-item text-sm text-gray-700">5</button>
+                            <button class="pagination-item text-sm text-gray-700">...</button>
+                            <button class="pagination-item text-sm text-gray-700">12</button>
+                            <button class="pagination-item text-sm text-gray-500">
+                                <i class="fa fa-angle-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+    
+    <!-- 申诉详情弹窗 -->
+    <div id="appealDetailModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between p-6 border-b border-gray-200">
+                <h3 class="text-lg font-medium">申诉详情</h3>
+                <button id="closeAppealDetailModal" class="text-gray-500 hover:text-gray-700">
+                    <i class="fa fa-times"></i>
+                </button>
+            </div>
+            <div class="p-6">
+                <!-- 申诉基本信息 -->
+                <div class="mb-6 p-4 bg-gray-50 rounded-lg">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                            <p class="text-xs text-gray-500">申诉单号</p>
+                            <p class="text-sm font-medium">AP202308100001</p>
+                        </div>
+                        <div>
+                            <p class="text-xs text-gray-500">门店名称</p>
+                            <p class="text-sm font-medium">北京朝阳店</p>
+                        </div>
+                        <div>
+                            <p class="text-xs text-gray-500">门店编号</p>
+                            <p class="text-sm font-medium">STORE-BJ-001</p>
+                        </div>
+                        <div>
+                            <p class="text-xs text-gray-500">走访轮次</p>
+                            <p class="text-sm font-medium">2023-Q3</p>
+                        </div>
+                        <div>
+                            <p class="text-xs text-gray-500">提交时间</p>
+                            <p class="text-sm font-medium">2023-08-10 09:25:36</p>
+                        </div>
+                        <div>
+                            <p class="text-xs text-gray-500">申诉状态</p>
+                            <p class="text-sm font-medium text-warning">待处理</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 申诉题目详情 -->
+                <div class="space-y-6">
+                    <!-- 申诉项1 -->
+                    <div class="border border-gray-200 rounded-lg overflow-hidden">
+                        <div class="p-4 bg-gray-50 border-b border-gray-200">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm font-medium">护理前接待 - 服务提供</p>
+                                    <p class="text-xs text-gray-500 mt-1">申诉项 #1</p>
+                                </div>
+                                <span class="px-2 py-1 text-xs bg-warning/10 text-warning rounded-full">待处理</span>
+                            </div>
+                        </div>
+                        <div class="p-4 space-y-4">
+                            <div>
+                                <p class="text-sm text-gray-500 mb-2">原始题目</p>
+                                <p class="text-sm font-medium">护理前接待流程中，服务人员提供了哪些服务？</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500 mb-2">神秘客选择</p>
+                                <p class="text-sm">热情问候 (3分)、递上茶水 (2分) (共5分)</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500 mb-2">审核后得分</p>
+                                <p class="text-sm">3分</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500 mb-2">扣分原因</p>
+                                <p class="text-sm">经录音核实，服务人员确实有热情问候，但未提供茶水服务。</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500 mb-2">门店申诉理由</p>
+                                <div class="p-3 bg-gray-50 rounded text-sm">
+                                    经门店核实当日监控录像，服务人员确实提供了茶水服务，由于神秘客在录音过程中可能未提及，导致审核结果与实际情况不符。附件为当日监控录像截图。
+                                </div>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500 mb-2">申诉凭证</p>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div class="border border-gray-200 rounded p-2 text-center">
+                                        <img src="https://picsum.photos/id/237/150/100" alt="监控截图1" class="w-full h-24 object-cover rounded mb-2">
+                                        <p class="text-xs text-gray-500">监控截图1.jpg</p>
+                                        <button class="text-xs text-primary mt-1">下载</button>
+                                    </div>
+                                    <div class="border border-gray-200 rounded p-2 text-center">
+                                        <img src="https://picsum.photos/id/238/150/100" alt="监控截图2" class="w-full h-24 object-cover rounded mb-2">
+                                        <p class="text-xs text-gray-500">监控截图2.jpg</p>
+                                        <button class="text-xs text-primary mt-1">下载</button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 审核意见 -->
+                            <div class="border-t border-gray-200 pt-4">
+                                <p class="text-sm font-medium mb-3">审核意见</p>
+                                <div class="space-y-4">
+                                    <div>
+                                        <label class="block text-sm text-gray-700 mb-2">处理结果</label>
+                                        <div class="flex space-x-4">
+                                            <label class="inline-flex items-center">
+                                                <input type="radio" name="appealResult1" class="w-4 h-4 text-primary">
+                                                <span class="ml-2 text-sm text-gray-700">申诉成功</span>
+                                            </label>
+                                            <label class="inline-flex items-center">
+                                                <input type="radio" name="appealResult1" class="w-4 h-4 text-primary">
+                                                <span class="ml-2 text-sm text-gray-700">申诉失败</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm text-gray-700 mb-2">审核说明</label>
+                                        <textarea rows="3" class="w-full px-3 py-2 border border-gray-300 rounded text-sm" placeholder="请输入审核说明..."></textarea>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm text-gray-700 mb-2">修正分数</label>
+                                        <input type="number" value="3" min="0" max="5" class="w-20 px-3 py-2 border border-gray-300 rounded text-sm">
+                                        <span class="ml-2 text-sm text-gray-500">/ 5分</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 申诉项2 -->
+                    <div class="border border-gray-200 rounded-lg overflow-hidden">
+                        <div class="p-4 bg-gray-50 border-b border-gray-200">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm font-medium">护理后接待 - 注意事项说明</p>
+                                    <p class="text-xs text-gray-500 mt-1">申诉项 #2</p>
+                                </div>
+                                <span class="px-2 py-1 text-xs bg-warning/10 text-warning rounded-full">待处理</span>
+                            </div>
+                        </div>
+                        <div class="p-4 space-y-4">
+                            <div>
+                                <p class="text-sm text-gray-500 mb-2">原始题目</p>
+                                <p class="text-sm font-medium">护理结束后，服务人员是否向您说明注意事项？</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500 mb-2">神秘客选择</p>
+                                <p class="text-sm">是，但说明不够详细 (2分) (满分4分)</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500 mb-2">审核后得分</p>
+                                <p class="text-sm">1分</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500 mb-2">扣分原因</p>
+                                <p class="text-sm">服务人员简单说明了注意事项，但未详细解释。</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500 mb-2">门店申诉理由</p>
+                                <div class="p-3 bg-gray-50 rounded text-sm">
+                                    根据门店服务标准，护理后注意事项的说明应包含基础内容，服务人员已经按照标准流程进行了说明。附件为门店服务标准文档及当日服务记录。
+                                </div>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500 mb-2">申诉凭证</p>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div class="border border-gray-200 rounded p-2 text-center">
+                                        <div class="w-full h-24 flex items-center justify-center bg-gray-100 rounded mb-2">
+                                            <i class="fa fa-file-pdf-o text-4xl text-danger"></i>
+                                        </div>
+                                        <p class="text-xs text-gray-500">服务标准文档.pdf</p>
+                                        <button class="text-xs text-primary mt-1">下载</button>
+                                    </div>
+                                    <div class="border border-gray-200 rounded p-2 text-center">
+                                        <div class="w-full h-24 flex items-center justify-center bg-gray-100 rounded mb-2">
+                                            <i class="fa fa-file-text-o text-4xl text-primary"></i>
+                                        </div>
+                                        <p class="text-xs text-gray-500">服务记录.xlsx</p>
+                                        <button class="text-xs text-primary mt-1">下载</button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 审核意见 -->
+                            <div class="border-t border-gray-200 pt-4">
+                                <p class="text-sm font-medium mb-3">审核意见</p>
+                                <div class="space-y-4">
+                                    <div>
+                                        <label class="block text-sm text-gray-700 mb-2">处理结果</label>
+                                        <div class="flex space-x-4">
+                                            <label class="inline-flex items-center">
+                                                <input type="radio" name="appealResult2" class="w-4 h-4 text-primary">
+                                                <span class="ml-2 text-sm text-gray-700">申诉成功</span>
+                                            </label>
+                                            <label class="inline-flex items-center">
+                                                <input type="radio" name="appealResult2" class="w-4 h-4 text-primary">
+                                                <span class="ml-2 text-sm text-gray-700">申诉失败</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm text-gray-700 mb-2">审核说明</label>
+                                        <textarea rows="3" class="w-full px-3 py-2 border border-gray-300 rounded text-sm" placeholder="请输入审核说明..."></textarea>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm text-gray-700 mb-2">修正分数</label>
+                                        <input type="number" value="1" min="0" max="4" class="w-20 px-3 py-2 border border-gray-300 rounded text-sm">
+                                        <span class="ml-2 text-sm text-gray-500">/ 4分</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="flex items-center justify-end p-6 border-t border-gray-200 space-x-4">
+                <button id="cancelAppealDetailBtn" class="px-4 py-2 border border-gray-300 rounded text-sm text-gray-700 hover:bg-gray-50">关闭</button>
+                <button id="saveDraftAppealBtn" class="px-4 py-2 border border-primary text-primary rounded text-sm hover:bg-primary/5">保存草稿</button>
+                <button id="submitAppealDetailBtn" class="px-4 py-2 bg-primary text-white rounded text-sm hover:bg-primary/90">提交审核</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 脚本 -->
+    <script>
+        // 侧边栏切换功能
+        document.getElementById('toggle-sidebar').addEventListener('click', function() {
+            const sidebar = document.querySelector('aside');
+            sidebar.classList.toggle('w-64');
+            sidebar.classList.toggle('w-20');
+            
+            // 隐藏或显示文字
+            const sidebarTexts = document.querySelectorAll('aside span');
+            sidebarTexts.forEach(text => {
+                text.classList.toggle('hidden');
+            });
+            
+            const sidebarTitles = document.querySelectorAll('aside .text-xs');
+            sidebarTitles.forEach(title => {
+                title.classList.toggle('hidden');
+            });
+            
+            const sidebarBrand = document.querySelector('aside h1');
+            sidebarBrand.classList.toggle('hidden');
+        });
+        
+        // 申诉详情弹窗
+        const appealDetailModal = document.getElementById('appealDetailModal');
+        const closeAppealDetailModal = document.getElementById('closeAppealDetailModal');
+        const cancelAppealDetailBtn = document.getElementById('cancelAppealDetailBtn');
+        const saveDraftAppealBtn = document.getElementById('saveDraftAppealBtn');
+        const submitAppealDetailBtn = document.getElementById('submitAppealDetailBtn');
+        const viewAppealBtns = document.querySelectorAll('.view-appeal');
+        
+        // 打开弹窗
+        viewAppealBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const appealId = this.getAttribute('data-id');
+                // 模拟加载申诉详情数据
+                console.log('加载申诉ID:', appealId);
+                appealDetailModal.classList.remove('hidden');
+            });
+        });
+        
+        // 关闭弹窗
+        closeAppealDetailModal.addEventListener('click', function() {
+            appealDetailModal.classList.add('hidden');
+        });
+        
+        cancelAppealDetailBtn.addEventListener('click', function() {
+            appealDetailModal.classList.add('hidden');
+        });
+        
+        // 点击弹窗外部关闭
+        appealDetailModal.addEventListener('click', function(e) {
+            if (e.target === appealDetailModal) {
+                appealDetailModal.classList.add('hidden');
+            }
+        });
+        
+        // 保存草稿
+        saveDraftAppealBtn.addEventListener('click', function() {
+            // 模拟保存草稿逻辑
+            alert('申诉处理草稿已保存');
+        });
+        
+        // 提交审核
+        submitAppealDetailBtn.addEventListener('click', function() {
+            // 模拟提交审核逻辑
+            alert('申诉处理结果已提交');
+            appealDetailModal.classList.add('hidden');
+        });
+        
+        // 分页功能
+        const paginationItems = document.querySelectorAll('.pagination-item');
+        paginationItems.forEach(item => {
+            if (item.hasAttribute('disabled')) return;
+            
+            item.addEventListener('click', function() {
+                // 移除所有活动状态
+                paginationItems.forEach(i => {
+                    if (!i.hasAttribute('disabled') && !i.querySelector('.fa')) {
+                        i.classList.remove('active');
+                        i.classList.add('text-gray-700');
+                    }
+                });
+                
+                // 设置当前活动状态
+                if (!this.querySelector('.fa')) {
+                    this.classList.add('active');
+                    this.classList.remove('text-gray-700');
+                }
+                
+                // 模拟分页加载逻辑
+                console.log('加载分页:', this.textContent);
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>我的订单</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#CFA389', // 渐变起始色
+                        secondary: '#A3684C', // 渐变结束色
+                        accent: '#fbbf24', // 金色辅助色
+                        success: '#10b981', // 成功绿色
+                        warning: '#f59e0b', // 警告黄色
+                        background: '#ffffff', // 白色背景
+                        divider: '#f3f4f6', // 浅灰色分隔线
+                        text: {
+                            primary: '#1f2937',
+                            secondary: '#6b7280',
+                            light: '#9ca3af'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['PingFang SC', 'Helvetica Neue', 'Arial', 'sans-serif']
+                    },
+                    boxShadow: {
+                        'card': '0 2px 8px rgba(0, 0, 0, 0.08)',
+                        'bottom': '0 -2px 10px rgba(0, 0, 0, 0.05)'
+                    }
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .order-card {
+                @apply bg-background rounded-lg shadow-card overflow-hidden mb-4;
+            }
+            .card-preview-small {
+                @apply relative w-20 h-14 rounded-md overflow-hidden shadow-sm;
+            }
+            .order-status {
+                @apply px-2 py-0.5 rounded-full text-xs;
+            }
+            .tab-active {
+                @apply text-primary border-b-2 border-primary;
+            }
+            .primary-gradient {
+                background: linear-gradient(to right, #CFA389, #A3684C);
+            }
+        }
+    </style>
+</head>
+<body class="bg-background text-text-primary font-sans min-h-screen">
+    <!-- 微信小程序尺寸容器 -->
+    <div class="max-w-md mx-auto relative">
+    <!-- 顶部导航栏 -->
+    <header class="sticky top-0 z-50 bg-background border-b border-divider">
+        <div class="flex items-center justify-between h-14 px-4">
+            <button id="backButton" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100">
+                <i class="fa fa-chevron-left text-text-primary"></i>
+            </button>
+            <h1 class="text-lg font-medium">我的订单</h1>
+            <div class="w-8"></div> <!-- 占位，保持标题居中 -->
+        </div>
+    </header>
+
+    <!-- 订单状态筛选选项卡 -->
+    <div class="bg-background sticky top-14 z-40 border-b border-divider max-w-md mx-auto">
+        <div class="flex justify-around">
+            <div class="flex-1 py-3 text-center tab-active">全部</div>
+            <div class="flex-1 py-3 text-center text-text-secondary">待发货</div>
+            <div class="flex-1 py-3 text-center text-text-secondary">已发货</div>
+            <div class="flex-1 py-3 text-center text-text-secondary">已完成</div>
+            <div class="flex-1 py-3 text-center text-text-secondary">已取消</div>
+        </div>
+    </div>
+
+    <!-- 订单列表 -->
+    <main class="pb-6 px-4">
+        <!-- 订单1：待发货 -->
+        <div class="order-card">
+            <!-- 订单头部 -->
+            <div class="flex justify-between items-center px-4 py-3 border-b border-divider">
+                <div class="flex items-center">
+                    <span class="text-text-secondary text-sm mr-2">订单号：</span>
+                    <span class="text-xs">20231215123456789</span>
+                </div>
+                <span class="order-status bg-yellow-100 text-warning">待发货</span>
+            </div>
+            <!-- 订单商品 -->
+            <div class="px-4 py-4 border-b border-divider">
+                <div class="flex items-center">
+                    <!-- 礼品卡预览 -->
+                    <div class="card-preview-small primary-gradient">
+                        <div class="absolute inset-0 flex flex-col items-center justify-center text-white p-2">
+                            <h3 class="text-xs font-bold">美意卡</h3>
+                            <p class="text-xs opacity-90">¥100</p>
+                        </div>
+                    </div>
+                    <!-- 礼品卡详情 -->
+                    <div class="ml-3 flex-1">
+                        <h3 class="font-medium text-sm">美意卡 - 实物礼品卡</h3>
+                        <p class="text-xs text-text-light mt-1">有效期：自激活日起36个月</p>
+                        <div class="flex justify-between items-center mt-2">
+                            <span class="text-xs text-text-light">收货地址：上海市浦东新区</span>
+                            <span class="text-sm font-medium">¥100.00</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- 订单底部操作 -->
+            <div class="flex justify-end items-center px-4 py-3 space-x-3">
+                <button class="px-4 py-1.5 border border-divider rounded-full text-sm text-text-secondary hover:bg-gray-50">
+                    提醒发货
+                </button>
+                <button class="px-4 py-1.5 primary-gradient text-white rounded-full text-sm">
+                    查看详情
+                </button>
+            </div>
+        </div>
+
+        <!-- 订单2：已发货 -->
+        <div class="order-card">
+            <!-- 订单头部 -->
+            <div class="flex justify-between items-center px-4 py-3 border-b border-divider">
+                <div class="flex items-center">
+                    <span class="text-text-secondary text-sm mr-2">订单号：</span>
+                    <span class="text-xs">20231210987654321</span>
+                </div>
+                <span class="order-status bg-blue-100 text-blue-600">已发货</span>
+            </div>
+            <!-- 订单商品 -->
+            <div class="px-4 py-4 border-b border-divider">
+                <div class="flex items-center">
+                    <!-- 礼品卡预览 -->
+                    <div class="card-preview-small primary-gradient">
+                        <div class="absolute inset-0 flex flex-col items-center justify-center text-white p-2">
+                            <h3 class="text-xs font-bold">美意卡</h3>
+                            <p class="text-xs opacity-90">¥200</p>
+                        </div>
+                    </div>
+                    <!-- 礼品卡详情 -->
+                    <div class="ml-3 flex-1">
+                        <h3 class="font-medium text-sm">美意卡 - 实物礼品卡</h3>
+                        <p class="text-xs text-text-light mt-1">有效期：自激活日起36个月</p>
+                        <div class="flex justify-between items-center mt-2">
+                            <span class="text-xs text-text-light">收货地址：北京市海淀区</span>
+                            <span class="text-sm font-medium">¥200.00</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- 订单底部操作 -->
+            <div class="flex justify-end items-center px-4 py-3 space-x-3">
+                <button class="px-4 py-1.5 border border-divider rounded-full text-sm text-text-secondary hover:bg-gray-50">
+                    查看物流
+                </button>
+                <button class="px-4 py-1.5 bg-primary text-white rounded-full text-sm hover:bg-purple-700">
+                    查看详情
+                </button>
+            </div>
+        </div>
+
+        <!-- 订单3：已完成 -->
+        <div class="order-card">
+            <!-- 订单头部 -->
+            <div class="flex justify-between items-center px-4 py-3 border-b border-divider">
+                <div class="flex items-center">
+                    <span class="text-text-secondary text-sm mr-2">订单号：</span>
+                    <span class="text-xs">20231125654321987</span>
+                </div>
+                <span class="order-status bg-green-100 text-success">已完成</span>
+            </div>
+            <!-- 订单商品 -->
+            <div class="px-4 py-4 border-b border-divider">
+                <div class="flex items-center">
+                    <!-- 礼品卡预览 -->
+                    <div class="card-preview-small primary-gradient">
+                        <div class="absolute inset-0 flex flex-col items-center justify-center text-white p-2">
+                            <h3 class="text-xs font-bold">美意卡</h3>
+                            <p class="text-xs opacity-90">¥500</p>
+                        </div>
+                    </div>
+                    <!-- 礼品卡详情 -->
+                    <div class="ml-3 flex-1">
+                        <h3 class="font-medium text-sm">美意卡 - 实物礼品卡</h3>
+                        <p class="text-xs text-text-light mt-1">有效期：自激活日起36个月</p>
+                        <div class="flex justify-between items-center mt-2">
+                            <span class="text-xs text-text-light">收货地址：广州市天河区</span>
+                            <span class="text-sm font-medium">¥500.00</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- 订单底部操作 -->
+            <div class="flex justify-end items-center px-4 py-3 space-x-3">
+                <button class="px-4 py-1.5 border border-divider rounded-full text-sm text-text-secondary hover:bg-gray-50">
+                    再次购买
+                </button>
+                <button class="px-4 py-1.5 bg-primary text-white rounded-full text-sm hover:bg-purple-700">
+                    查看详情
+                </button>
+            </div>
+        </div>
+
+        <!-- 没有更多订单 -->
+        <div class="text-center py-8 text-text-light">
+            <i class="fa fa-inbox text-3xl mb-2"></i>
+            <p>没有更多订单了</p>
+        </div>
+    </main>
+
+    <script>
+        // 返回按钮点击事件
+        document.getElementById('backButton').addEventListener('click', function() {
+            // 实际项目中这里应该是返回上一页
+            window.history.back();
+        });
+
+        // 订单状态选项卡切换事件（模拟）
+        const tabs = document.querySelectorAll('.bg-background.sticky.top-14 div > div');
+        tabs.forEach(tab => {
+            tab.addEventListener('click', function() {
+                // 移除所有选中状态
+                tabs.forEach(t => {
+                    t.classList.remove('tab-active');
+                    t.classList.add('text-text-secondary');
+                });
+                // 添加当前选中状态
+                this.classList.add('tab-active');
+                this.classList.remove('text-text-secondary');
+                
+                // 实际项目中这里应该根据选中的状态筛选订单列表
+                alert('筛选订单：' + this.textContent);
+            });
+        });
+
+        // 订单操作按钮点击事件（模拟）
+        document.querySelectorAll('.order-card button').forEach(button => {
+            button.addEventListener('click', function() {
+                if (this.textContent.includes('查看详情')) {
+                    alert('查看订单详情');
+                } else if (this.textContent.includes('查看物流')) {
+                    alert('查看物流信息');
+                } else if (this.textContent.includes('提醒发货')) {
+                    alert('已提醒商家发货');
+                } else if (this.textContent.includes('再次购买')) {
+                    window.location.href = 'mei_yi_card_selection.html';
+                }
+            });
+        });
+    </script>
+    </div>
+</body>
+</html>

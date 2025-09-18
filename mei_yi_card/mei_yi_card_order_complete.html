@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>订单完成</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#CFA389', // 渐变起始色
+                        secondary: '#A3684C', // 渐变结束色
+                        accent: '#fbbf24', // 金色辅助色
+                        success: '#10b981', // 成功绿色
+                        background: '#ffffff', // 白色背景
+                        divider: '#f3f4f6', // 浅灰色分隔线
+                        text: {
+                            primary: '#1f2937',
+                            secondary: '#6b7280',
+                            light: '#9ca3af'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['PingFang SC', 'Helvetica Neue', 'Arial', 'sans-serif']
+                    },
+                    boxShadow: {
+                        'card': '0 2px 8px rgba(0, 0, 0, 0.08)',
+                        'bottom': '0 -2px 10px rgba(0, 0, 0, 0.05)'
+                    }
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .success-icon {
+                @apply w-20 h-20 rounded-full bg-success/10 flex items-center justify-center mx-auto;
+            }
+            .order-info-card {
+                @apply bg-background rounded-lg shadow-card p-4 mb-6;
+            }
+            .info-item {
+                @apply flex justify-between items-center py-2;
+            }
+            .action-button {
+                @apply w-full py-3 rounded-full font-medium transition-colors;
+            }
+            .service-card {
+                @apply bg-background rounded-lg shadow-card p-4 flex items-center;
+            }
+            .primary-gradient {
+                background: linear-gradient(to right, #CFA389, #A3684C);
+            }
+        }
+    </style>
+</head>
+<body class="bg-background text-text-primary font-sans min-h-screen">
+    <!-- 微信小程序尺寸容器 -->
+    <div class="max-w-md mx-auto relative">
+    <!-- 顶部导航栏 -->
+    <header class="sticky top-0 z-50 bg-background border-b border-divider">
+        <div class="flex items-center justify-center h-14">
+            <h1 class="text-lg font-medium">订单完成</h1>
+        </div>
+    </header>
+
+    <!-- 主要内容区 -->
+    <main class="pb-24 px-6">
+        <!-- 订单完成状态 -->
+        <section class="py-8 text-center">
+            <div class="success-icon mb-4">
+                <i class="fa fa-check text-4xl text-success"></i>
+            </div>
+            <h2 class="text-xl font-bold mb-2">订单支付成功</h2>
+            <p class="text-text-secondary">您的实物礼品卡将尽快为您发货</p>
+        </section>
+
+        <!-- 订单信息概览 -->
+        <section class="order-info-card">
+            <h3 class="text-base font-medium mb-4">订单信息</h3>
+            <div class="info-item">
+                <span class="text-text-secondary">订单编号</span>
+                <span class="text-sm">20231215123456789</span>
+            </div>
+            <div class="info-item">
+                <span class="text-text-secondary">支付方式</span>
+                <span class="text-sm">微信支付</span>
+            </div>
+            <div class="info-item">
+                <span class="text-text-secondary">支付时间</span>
+                <span class="text-sm">2023-12-15 14:30:25</span>
+            </div>
+            <div class="info-item">
+                <span class="text-text-secondary">支付金额</span>
+                <span class="font-medium">¥100.00</span>
+            </div>
+        </section>
+
+        <!-- 配送信息 -->
+        <section class="order-info-card">
+            <h3 class="text-base font-medium mb-4">配送信息</h3>
+            <div class="info-item">
+                <span class="text-text-secondary">收货人</span>
+                <span class="text-sm">张三 (138****1234)</span>
+            </div>
+            <div class="info-item">
+                <span class="text-text-secondary">收货地址</span>
+                <span class="text-sm text-right">上海市 上海市 浦东新区 张江高科技园区博云路2号</span>
+            </div>
+            <div class="info-item">
+                <span class="text-text-secondary">配送方式</span>
+                <span class="text-sm">标准快递</span>
+            </div>
+        </section>
+
+        <!-- 后续操作按钮 -->
+        <section class="mt-8">
+            <button id="viewOrderButton" class="action-button primary-gradient text-white shadow-md mb-4">
+                查看订单
+            </button>
+            <button id="returnHomeButton" class="action-button bg-gray-100 text-text-primary hover:bg-gray-200">
+                返回首页
+            </button>
+        </section>
+
+        <!-- 推荐服务 -->
+        <section class="mt-10">
+            <h3 class="text-base font-medium mb-4">为您推荐</h3>
+            <div class="grid grid-cols-2 gap-4">
+                <div class="service-card">
+                    <div class="w-10 h-10 rounded-full bg-secondary/10 flex items-center justify-center mr-3">
+                            <i class="fa fa-gift text-secondary"></i>
+                        </div>
+                    <div>
+                        <p class="text-sm font-medium">更多礼品卡</p>
+                        <p class="text-xs text-text-light">挑选其他面额</p>
+                    </div>
+                </div>
+                <div class="service-card">
+                    <div class="w-10 h-10 rounded-full bg-secondary/10 flex items-center justify-center mr-3">
+                        <i class="fa fa-users text-secondary"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium">分享给好友</p>
+                        <p class="text-xs text-text-light">一起体验送礼乐趣</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // 查看订单按钮点击事件
+        document.getElementById('viewOrderButton').addEventListener('click', function() {
+            // 实际项目中这里应该是跳转到订单详情页面
+            window.location.href = 'mei_yi_card_my_orders.html';
+        });
+
+        // 返回首页按钮点击事件
+        document.getElementById('returnHomeButton').addEventListener('click', function() {
+            // 实际项目中这里应该是返回首页
+            window.location.href = 'mei_yi_card_selection.html';
+        });
+    </script>
+    </div>
+</body>
+</html>
