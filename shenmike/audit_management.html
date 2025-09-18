@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>审核管理 - 神秘客问卷系统</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    
+    <!-- 配置Tailwind自定义颜色和工具类 -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#4F46E5',
+                        secondary: '#6366F1',
+                        success: '#10B981',
+                        warning: '#F59E0B',
+                        danger: '#EF4444',
+                        info: '#3B82F6',
+                        dark: '#1E293B',
+                        light: '#F8FAFC'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    
+    <!-- 自定义工具类 -->
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .sidebar-item-active {
+                @apply bg-primary/10 text-primary border-r-4 border-primary;
+            }
+            .card-shadow {
+                @apply shadow-sm hover:shadow-md transition-shadow duration-200;
+            }
+            .btn-primary {
+                @apply bg-primary text-white px-4 py-2 rounded-md hover:bg-primary/90 transition-colors;
+            }
+            .btn-secondary {
+                @apply bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-50 transition-colors;
+            }
+            .btn-danger {
+                @apply bg-white border border-danger text-danger px-4 py-2 rounded-md hover:bg-danger/5 transition-colors;
+            }
+            .input-field {
+                @apply w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition-all;
+            }
+            .checkbox-custom {
+                @apply w-4 h-4 text-primary rounded border-gray-300 focus:ring-primary/50;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <div class="flex h-screen overflow-hidden">
+        <!-- 侧边导航栏 -->
+        <aside class="w-64 bg-white border-r border-gray-200 flex flex-col transition-all duration-300" id="sidebar">
+            <!-- 品牌Logo -->
+            <div class="h-16 flex items-center justify-between px-4 border-b border-gray-200">
+                <h1 class="text-xl font-bold text-primary">
+                    <i class="fa fa-pie-chart mr-2"></i>CRM客户体验管理综合平台
+                </h1>
+                <button id="toggle-sidebar" class="text-gray-500 hover:text-primary">
+                    <i class="fa fa-bars"></i>
+                </button>
+            </div>
+            
+            <!-- 导航菜单 -->
+            <nav class="py-4">
+                <div class="px-4 py-2 text-xs font-medium text-gray-500">问卷管理</div>
+                <a href="#" class="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50">
+                    <i class="fa fa-list-ul w-6"></i>
+                    <span>问卷列表</span>
+                </a>
+                <a href="#" class="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50">
+                    <i class="fa fa-volume-up w-6"></i>
+                    <span>语音列表</span>
+                </a>
+                
+                <div class="px-4 py-2 text-xs font-medium text-gray-500 mt-4">神秘客调研</div>
+                <a href="admin_dashboard.html" class="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50">
+                    <i class="fa fa-tachometer w-6"></i>
+                    <span>控制台</span>
+                </a>
+                <a href="questionnaire_list.html" class="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50">
+                    <i class="fa fa-question-circle w-6"></i>
+                    <span>神秘客问卷</span>
+                </a>
+                <a href="audio_review.html" class="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50">
+                    <i class="fa fa-headphones w-6"></i>
+                    <span>录音审核</span>
+                </a>
+                <a href="#" class="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50">
+                    <i class="fa fa-check-square w-6"></i>
+                    <span>任务分配</span>
+                </a>
+                <a href="score_management.html" class="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50">
+                    <i class="fa fa-bar-chart w-6"></i>
+                    <span>成绩统计</span>
+                </a>
+                <a href="appeal_management.html" class="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50">
+                    <i class="fa fa-gavel w-6"></i>
+                    <span>申诉管理</span>
+                </a>
+                <a href="Master Data Management.html" class="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50">
+                    <i class="fa fa-database w-6"></i>
+                    <span>门店主数据</span>
+                </a>
+                
+                <div class="px-4 py-2 text-xs font-medium text-gray-500 mt-4">审核管理</div>
+                <a href="audit_management.html" class="flex items-center px-4 py-3 text-sm sidebar-item-active">
+                    <i class="fa fa-check-circle w-6"></i>
+                    <span>审核标准管理</span>
+                </a>
+            </nav>
+        </aside>
+        
+        <!-- 主内容区域 -->
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <!-- 顶部导航栏 -->
+            <header class="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-6">
+                <div class="flex items-center">
+                    <h2 class="text-lg font-medium">审核标准管理</h2>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button class="text-gray-500 hover:text-primary">
+                        <i class="fa fa-bell text-lg"></i>
+                    </button>
+                    <div class="flex items-center">
+                        <img src="https://picsum.photos/id/1005/40/40" alt="用户头像" class="w-8 h-8 rounded-full object-cover mr-2">
+                        <span class="text-sm font-medium">管理员</span>
+                    </div>
+                </div>
+            </header>
+            
+            <!-- 内容区域 -->
+            <main class="flex-1 overflow-y-auto p-6">
+                <!-- 页面标题和操作 -->
+                <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
+                    <div>
+                        <h1 class="text-2xl font-bold text-gray-800">审核标准库</h1>
+                        <p class="text-gray-500 mt-1">管理所有问卷题目的审核标准和评分规则</p>
+                    </div>
+                    <div class="flex space-x-3 mt-4 md:mt-0">
+                        <div class="relative">
+                            <input type="text" placeholder="搜索审核标准..." class="input-field pl-10 w-full md:w-64">
+                            <i class="fa fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                        </div>
+                        <button class="btn-primary">
+                            <i class="fa fa-plus mr-2"></i>新增标准
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- 筛选和批量操作 -->
+                <div class="bg-white rounded-lg p-4 card-shadow mb-6">
+                    <div class="flex flex-col md:flex-row md:items-center md:justify-between">
+                        <div class="flex flex-wrap gap-3 mb-4 md:mb-0">
+                            <div class="flex items-center space-x-2">
+                                <label class="text-sm text-gray-600">模块筛选：</label>
+                                <select class="input-field text-sm w-40">
+                                    <option>全部模块</option>
+                                    <option>预约流程</option>
+                                    <option>护理前接待</option>
+                                    <option>护理体验</option>
+                                    <option>护理后接待</option>
+                                </select>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <label class="text-sm text-gray-600">题型筛选：</label>
+                                <select class="input-field text-sm w-40">
+                                    <option>全部题型</option>
+                                    <option>单选题</option>
+                                    <option>多选题</option>
+                                    <option>评分题</option>
+                                    <option>填空题</option>
+                                </select>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <label class="text-sm text-gray-600">状态筛选：</label>
+                                <select class="input-field text-sm w-40">
+                                    <option>全部状态</option>
+                                    <option>启用</option>
+                                    <option>禁用</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="flex space-x-2">
+                            <button class="btn-secondary text-sm">
+                                <i class="fa fa-filter mr-1"></i>筛选
+                            </button>
+                            <button class="btn-secondary text-sm">
+                                <i class="fa fa-refresh mr-1"></i>重置
+                            </button>
+                            <button class="btn-secondary text-sm">
+                                <i class="fa fa-download mr-1"></i>导出
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 审核标准列表 -->
+                <div class="bg-white rounded-lg card-shadow overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        <div class="flex items-center">
+                                            <input type="checkbox" class="checkbox-custom mr-2">
+                                            题目ID
+                                        </div>
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        所属模块
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        题目内容
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        题型
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        满分值
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        创建时间
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        状态
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        操作
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                <!-- 审核标准项1 -->
+                                <tr class="hover:bg-gray-50 transition-colors">
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <input type="checkbox" class="checkbox-custom mr-2">
+                                            <span class="text-sm text-gray-900">1.1</span>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="text-sm text-gray-900">预约流程</span>
+                                    </td>
+                                    <td class="px-6 py-4 max-w-xs">
+                                        <span class="text-sm text-gray-900 line-clamp-2">客户助理接听电话时是否有自我介绍？</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-800">单选题</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="text-sm text-gray-900">1</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="text-sm text-gray-500">2023-06-15</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 py-1 text-xs rounded-full bg-green-100 text-green-800">启用</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                        <button class="text-primary hover:text-primary/80 mr-3">查看</button>
+                                        <button class="text-info hover:text-info/80 mr-3">编辑</button>
+                                        <button class="text-danger hover:text-danger/80">禁用</button>
+                                    </td>
+                                </tr>
+                                
+                                <!-- 审核标准项2 -->
+                                <tr class="hover:bg-gray-50 transition-colors">
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <input type="checkbox" class="checkbox-custom mr-2">
+                                            <span class="text-sm text-gray-900">1.2</span>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="text-sm text-gray-900">预约流程</span>
+                                    </td>
+                                    <td class="px-6 py-4 max-w-xs">
+                                        <span class="text-sm text-gray-900 line-clamp-2">客户助理是否跟您确认以下预约信息？-有询问您的称呼-有询问预约日期及具体时间-有询问护理项目/团购项目/身体还是皮肤项目</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 py-1 text-xs rounded-full bg-purple-100 text-purple-800">多选题</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="text-sm text-gray-900">1</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="text-sm text-gray-500">2023-06-15</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 py-1 text-xs rounded-full bg-green-100 text-green-800">启用</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                        <button class="text-primary hover:text-primary/80 mr-3">查看</button>
+                                        <button class="text-info hover:text-info/80 mr-3">编辑</button>
+                                        <button class="text-danger hover:text-danger/80">禁用</button>
+                                    </td>
+                                </tr>
+                                
+                                <!-- 审核标准项3 -->
+                                <tr class="hover:bg-gray-50 transition-colors">
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <input type="checkbox" class="checkbox-custom mr-2">
+                                            <span class="text-sm text-gray-900">2.1</span>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="text-sm text-gray-900">护理前接待</span>
+                                    </td>
+                                    <td class="px-6 py-4 max-w-xs">
+                                        <span class="text-sm text-gray-900 line-clamp-2">客户经理是否在您到店后1分钟内迎接您，并热情问候？</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-800">单选题</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="text-sm text-gray-900">2</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="text-sm text-gray-500">2023-06-16</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 py-1 text-xs rounded-full bg-green-100 text-green-800">启用</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                        <button class="text-primary hover:text-primary/80 mr-3">查看</button>
+                                        <button class="text-info hover:text-info/80 mr-3">编辑</button>
+                                        <button class="text-danger hover:text-danger/80">禁用</button>
+                                    </td>
+                                </tr>
+                                
+                                <!-- 审核标准项4 -->
+                                <tr class="hover:bg-gray-50 transition-colors">
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <input type="checkbox" class="checkbox-custom mr-2">
+                                            <span class="text-sm text-gray-900">3.1</span>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="text-sm text-gray-900">护理体验</span>
+                                    </td>
+                                    <td class="px-6 py-4 max-w-xs">
+                                        <span class="text-sm text-gray-900 line-clamp-2">美疗师是否有提供首饰袋，并帮助您妥善存放随身物品？</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-800">单选题</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="text-sm text-gray-900">1</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="text-sm text-gray-500">2023-06-17</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 py-1 text-xs rounded-full bg-red-100 text-red-800">禁用</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                        <button class="text-primary hover:text-primary/80 mr-3">查看</button>
+                                        <button class="text-info hover:text-info/80 mr-3">编辑</button>
+                                        <button class="text-success hover:text-success/80">启用</button>
+                                    </td>
+                                </tr>
+                                
+                                <!-- 审核标准项5 -->
+                                <tr class="hover:bg-gray-50 transition-colors">
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <input type="checkbox" class="checkbox-custom mr-2">
+                                            <span class="text-sm text-gray-900">4.1</span>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="text-sm text-gray-900">护理后接待</span>
+                                    </td>
+                                    <td class="px-6 py-4 max-w-xs">
+                                        <span class="text-sm text-gray-900 line-clamp-2">美疗师是否引领您至顾问间？是否提供茶水？是否有跟客户经理交接？</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 py-1 text-xs rounded-full bg-purple-100 text-purple-800">多选题</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="text-sm text-gray-900">4</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="text-sm text-gray-500">2023-06-18</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 py-1 text-xs rounded-full bg-green-100 text-green-800">启用</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                        <button class="text-primary hover:text-primary/80 mr-3">查看</button>
+                                        <button class="text-info hover:text-info/80 mr-3">编辑</button>
+                                        <button class="text-danger hover:text-danger/80">禁用</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- 分页 -->
+                    <div class="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
+                        <div class="text-sm text-gray-700">
+                            显示 <span class="font-medium">1</span> 到 <span class="font-medium">5</span> 条，共 <span class="font-medium">42</span> 条记录
+                        </div>
+                        <div class="flex space-x-1">
+                            <button class="px-3 py-1 rounded border border-gray-300 text-sm text-gray-500 hover:bg-gray-50 disabled:opacity-50" disabled>
+                                <i class="fa fa-chevron-left"></i>
+                            </button>
+                            <button class="px-3 py-1 rounded border border-primary bg-primary text-sm text-white">1</button>
+                            <button class="px-3 py-1 rounded border border-gray-300 text-sm text-gray-700 hover:bg-gray-50">2</button>
+                            <button class="px-3 py-1 rounded border border-gray-300 text-sm text-gray-700 hover:bg-gray-50">3</button>
+                            <button class="px-3 py-1 rounded border border-gray-300 text-sm text-gray-700 hover:bg-gray-50">4</button>
+                            <button class="px-3 py-1 rounded border border-gray-300 text-sm text-gray-700 hover:bg-gray-50">5</button>
+                            <button class="px-3 py-1 rounded border border-gray-300 text-sm text-gray-500 hover:bg-gray-50">
+                                <i class="fa fa-chevron-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 审核标准详情弹窗 -->
+                <div class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50" id="standardDetailModal">
+                    <div class="bg-white rounded-lg w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+                        <div class="flex items-center justify-between p-6 border-b">
+                            <h3 class="text-lg font-medium">审核标准详情</h3>
+                            <button id="closeDetailModal" class="text-gray-500 hover:text-gray-700">
+                                <i class="fa fa-times text-xl"></i>
+                            </button>
+                        </div>
+                        <div class="p-6 space-y-6">
+                            <div class="border-b pb-4">
+                                <h4 class="text-base font-medium mb-3">基本信息</h4>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-sm text-gray-500 mb-1">题目ID</label>
+                                        <p class="text-base">1.1</p>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm text-gray-500 mb-1">所属模块</label>
+                                        <p class="text-base">预约流程</p>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm text-gray-500 mb-1">题目内容</label>
+                                        <p class="text-base">客户助理接听电话时是否有自我介绍？</p>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm text-gray-500 mb-1">题型</label>
+                                        <p class="text-base">单选题</p>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm text-gray-500 mb-1">满分值</label>
+                                        <p class="text-base">1</p>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm text-gray-500 mb-1">状态</label>
+                                        <p class="inline-block px-2 py-1 text-xs rounded-full bg-green-100 text-green-800">启用</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="border-b pb-4">
+                                <h4 class="text-base font-medium mb-3">选项与评分</h4>
+                                <div class="space-y-3">
+                                    <div class="flex items-center justify-between p-3 border rounded">
+                                        <div class="flex items-center">
+                                            <input type="radio" name="option-detail" class="w-4 h-4 text-primary" checked>
+                                            <span class="ml-2 text-base">有自我介绍</span>
+                                        </div>
+                                        <div class="flex items-center">
+                                            <span class="text-base font-medium mr-2">分值：</span>
+                                            <span class="text-base">1</span>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center justify-between p-3 border rounded">
+                                        <div class="flex items-center">
+                                            <input type="radio" name="option-detail" class="w-4 h-4 text-primary">
+                                            <span class="ml-2 text-base">否，未自我介绍</span>
+                                        </div>
+                                        <div class="flex items-center">
+                                            <span class="text-base font-medium mr-2">分值：</span>
+                                            <span class="text-base">0</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="border-b pb-4">
+                                <h4 class="text-base font-medium mb-3">审核标准</h4>
+                                <div class="p-4 border rounded bg-gray-50">
+                                    <p class="text-base">无固定话术，介绍门店+自己即可</p>
+                                </div>
+                            </div>
+                            
+                            <div class="border-b pb-4">
+                                <h4 class="text-base font-medium mb-3">版本信息</h4>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-sm text-gray-500 mb-1">创建时间</label>
+                                        <p class="text-base">2023-06-15 10:30:00</p>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm text-gray-500 mb-1">创建人</label>
+                                        <p class="text-base">系统管理员</p>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm text-gray-500 mb-1">最后修改时间</label>
+                                        <p class="text-base">2023-06-18 14:45:00</p>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm text-gray-500 mb-1">修改人</label>
+                                        <p class="text-base">审核管理员</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <h4 class="text-base font-medium mb-3">版本更新记录</h4>
+                                <div class="space-y-4">
+                                    <div class="flex space-x-3">
+                                        <div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center flex-shrink-0">
+                                            <i class="fa fa-user text-gray-500"></i>
+                                        </div>
+                                        <div class="flex-1">
+                                            <div class="flex items-center mb-1">
+                                                <span class="font-medium mr-2">审核管理员</span>
+                                                <span class="text-xs text-gray-500">2023-06-18 14:45:00</span>
+                                            </div>
+                                            <p class="text-sm text-gray-700">更新审核标准描述</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex space-x-3">
+                                        <div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center flex-shrink-0">
+                                            <i class="fa fa-user text-gray-500"></i>
+                                        </div>
+                                        <div class="flex-1">
+                                            <div class="flex items-center mb-1">
+                                                <span class="font-medium mr-2">系统管理员</span>
+                                                <span class="text-xs text-gray-500">2023-06-15 10:30:00</span>
+                                            </div>
+                                            <p class="text-sm text-gray-700">创建审核标准</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-6 border-t flex justify-end space-x-4">
+                            <button class="btn-secondary" id="cancelDetail">关闭</button>
+                            <button class="btn-primary">编辑标准</button>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+    
+    <!-- 脚本 -->
+    <script>
+        // 侧边栏切换功能
+        document.getElementById('toggle-sidebar').addEventListener('click', function() {
+            const sidebar = document.querySelector('aside');
+            sidebar.classList.toggle('w-64');
+            sidebar.classList.toggle('w-20');
+            
+            // 隐藏或显示文字
+            const sidebarTexts = document.querySelectorAll('aside span');
+            sidebarTexts.forEach(text => {
+                text.classList.toggle('hidden');
+            });
+            
+            const sidebarTitles = document.querySelectorAll('aside .text-xs');
+            sidebarTitles.forEach(title => {
+                title.classList.toggle('hidden');
+            });
+            
+            const sidebarBrand = document.querySelector('aside h1');
+            sidebarBrand.classList.toggle('hidden');
+        });
+        
+        // 审核标准详情弹窗
+        const detailModal = document.getElementById('standardDetailModal');
+        const viewButtons = document.querySelectorAll('button:contains("查看")');
+        
+        // 为所有查看按钮添加点击事件
+        document.querySelectorAll('button').forEach(button => {
+            if (button.textContent.trim() === '查看') {
+                button.addEventListener('click', function() {
+                    detailModal.classList.remove('hidden');
+                });
+            }
+        });
+        
+        // 关闭弹窗
+        document.getElementById('closeDetailModal').addEventListener('click', function() {
+            detailModal.classList.add('hidden');
+        });
+        
+        document.getElementById('cancelDetail').addEventListener('click', function() {
+            detailModal.classList.add('hidden');
+        });
+        
+        // 点击其他区域关闭弹窗
+        detailModal.addEventListener('click', function(event) {
+            if (event.target === detailModal) {
+                detailModal.classList.add('hidden');
+            }
+        });
+        
+        // 全选功能
+        const selectAllCheckbox = document.querySelector('thead input[type="checkbox"]');
+        const itemCheckboxes = document.querySelectorAll('tbody input[type="checkbox"]');
+        
+        selectAllCheckbox.addEventListener('change', function() {
+            itemCheckboxes.forEach(checkbox => {
+                checkbox.checked = selectAllCheckbox.checked;
+            });
+        });
+        
+        // 悬停效果增强
+        const tableRows = document.querySelectorAll('tbody tr');
+        tableRows.forEach(row => {
+            row.addEventListener('mouseenter', function() {
+                this.classList.add('shadow-sm');
+            });
+            row.addEventListener('mouseleave', function() {
+                this.classList.remove('shadow-sm');
+            });
+        });
+        
+        // 分页按钮交互
+        const pageButtons = document.querySelectorAll('.flex.space-x-1 button:not(:disabled)');
+        pageButtons.forEach(button => {
+            if (!button.disabled) {
+                button.addEventListener('click', function() {
+                    pageButtons.forEach(btn => {
+                        btn.classList.remove('border-primary', 'bg-primary', 'text-white');
+                        btn.classList.add('border-gray-300', 'text-gray-700', 'hover:bg-gray-50');
+                    });
+                    this.classList.remove('border-gray-300', 'text-gray-700', 'hover:bg-gray-50');
+                    this.classList.add('border-primary', 'bg-primary', 'text-white');
+                });
+            }
+        });
+    </script>
+</body>
+</html>

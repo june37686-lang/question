@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>神秘客调研统计</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
+    
+    <!-- 配置Tailwind自定义颜色和工具类 -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#165DFF',
+                        secondary: '#4080FF',
+                        success: '#00B42A',
+                        warning: '#FF7D00',
+                        danger: '#F53F3F',
+                        info: '#86909C',
+                        light: '#F2F3F5',
+                        dark: '#1D2129'
+                    },
+                    fontFamily: {
+                        sans: ['PingFang SC', 'Helvetica Neue', 'Arial', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    
+    <!-- 自定义工具类 -->
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .sidebar-item-active {
+                background-color: #E8F3FF;
+                color: #165DFF;
+                border-right: 3px solid #165DFF;
+            }
+            .card-shadow {
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            }
+            .btn-primary {
+                @apply bg-primary text-white px-4 py-2 rounded-md hover:bg-primary/90 transition-colors;
+            }
+            .btn-secondary {
+                @apply bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-50 transition-colors;
+            }
+            .btn-danger {
+                @apply bg-white border border-danger text-danger px-4 py-2 rounded-md hover:bg-danger/5 transition-colors;
+            }
+            .input-field {
+                @apply w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition-all;
+            }
+            .checkbox-custom {
+                @apply w-4 h-4 text-primary rounded border-gray-300 focus:ring-primary/50;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans text-dark">
+    <div class="flex h-screen overflow-hidden">
+        <!-- 侧边导航栏 -->
+        <aside class="w-64 bg-white h-full shadow-md flex-shrink-0">
+            <!-- 系统标题 -->
+            <div class="h-16 flex items-center justify-center border-b border-gray-200">
+                <h1 class="text-xl font-bold text-primary">CRM客户体验管理综合平台</h1>
+            </div>
+            
+            <!-- 导航菜单 -->
+            <nav class="py-4">
+                <div class="px-4 py-2 text-xs font-medium text-gray-500">问卷管理</div>
+                <a href="#" class="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50">
+                    <i class="fa fa-list-ul w-6"></i>
+                    <span>问卷列表</span>
+                </a>
+                <a href="#" class="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50">
+                    <i class="fa fa-volume-up w-6"></i>
+                    <span>语音列表</span>
+                </a>
+                
+                <div class="px-4 py-2 text-xs font-medium text-gray-500 mt-4">神秘客调研</div>
+                <a href="admin_dashboard.html" class="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50">
+                    <i class="fa fa-tachometer w-6"></i>
+                    <span>控制台</span>
+                </a>
+                <a href="questionnaire_list.html" class="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50">
+                    <i class="fa fa-question-circle w-6"></i>
+                    <span>神秘客问卷</span>
+                </a>
+                <a href="audio_review.html" class="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50">
+                    <i class="fa fa-headphones w-6"></i>
+                    <span>录音审核</span>
+                </a>
+                    <a href="review_management.html" class="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50">
+                        <i class="fa fa-tasks w-6"></i>
+                        <span>审核管理</span>
+                </a>
+                <a href="score_management.html" class="flex items-center px-4 py-3 text-sm sidebar-item-active">
+                    <i class="fa fa-bar-chart w-6"></i>
+                    <span>成绩统计</span>
+                </a>
+                <a href="appeal_management.html" class="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50">
+                    <i class="fa fa-gavel w-6"></i>
+                    <span>申诉管理</span>
+                </a>
+                <a href="Master Data Management.html" class="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50">
+                    <i class="fa fa-database w-6"></i>
+                    <span>门店主数据</span>
+                </a>
+            </nav>
+        </aside>
+        
+        <!-- 主内容区域 -->
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <!-- 顶部导航栏 -->
+            <header class="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-6">
+                <div class="flex items-center">
+                    <h2 class="text-lg font-medium">成绩统计</h2>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button class="text-gray-500 hover:text-primary">
+                        <i class="fa fa-bell text-lg"></i>
+                    </button>
+                    <div class="flex items-center">
+                        <img src="https://picsum.photos/id/1005/40/40" alt="用户头像" class="w-8 h-8 rounded-full object-cover mr-2">
+                        <span class="text-sm font-medium">管理员</span>
+                    </div>
+                </div>
+            </header>
+            
+            <!-- 内容区域 -->
+            <main class="flex-1 overflow-y-auto p-6">
+                <!-- 页面标题和操作 -->
+                <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
+                    <div>
+                        <h1 class="text-2xl font-bold text-gray-800">成绩统计</h1>
+                        <p class="text-gray-500 mt-1">查看所有门店的神秘客访问成绩和分析报告</p>
+                    </div>
+                    <div class="flex space-x-3 mt-4 md:mt-0">
+                        <div class="relative">
+                            <input type="text" placeholder="搜索门店..." class="input-field pl-10 w-full md:w-64">
+                            <i class="fa fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                        </div>
+                        <button class="btn-primary">
+                            <i class="fa fa-download mr-2"></i>导出报表
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- 筛选条件 -->
+                <div class="bg-white rounded-lg p-4 card-shadow mb-6">
+                    <div class="flex flex-col md:flex-row md:items-center md:justify-between">
+                        <div class="flex flex-wrap gap-3 mb-4 md:mb-0">
+                            <div class="flex items-center space-x-2">
+                                <label class="text-sm text-gray-600">日期：</label>
+                                <input type="date" class="input-field text-sm w-36">
+                                <span class="text-gray-500">至</span>
+                                <input type="date" class="input-field text-sm w-36">
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <label class="text-sm text-gray-600">门店：</label>
+                                <select class="input-field text-sm w-40">
+                                    <option>全部门店</option>
+                                    <option>上海陆家嘴中心店</option>
+                                    <option>上海环球港店</option>
+                                    <option>上海长泰店</option>
+                                    <option>上海万象天地店</option>
+                                </select>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <label class="text-sm text-gray-600">神秘客期数：</label>
+                                <select class="input-field text-sm w-40">
+                                    <option>全部期数</option>
+                                    <option>2025年第1期</option>
+                                    <option>2025年第2期</option>
+                                    <option>2025年第3期</option>
+                                    <option>2025年第4期</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="flex space-x-2">
+                            <button class="btn-secondary text-sm">
+                                <i class="fa fa-filter mr-1"></i>筛选
+                            </button>
+                            <button class="btn-secondary text-sm">
+                                <i class="fa fa-refresh mr-1"></i>重置
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 数据概览 -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                    <div class="bg-white p-5 rounded-lg card-shadow">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-sm font-medium text-gray-500">总平均分</h3>
+                            <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">+2.3%</span>
+                        </div>
+                        <div class="flex items-end">
+                            <p class="text-3xl font-bold">92.50%</p>
+                            <p class="text-sm text-gray-500 ml-2 mb-1">分</p>
+                        </div>
+                    </div>
+                    <div class="bg-white p-5 rounded-lg card-shadow">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-sm font-medium text-gray-500">优秀门店数</h3>
+                            <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">+5</span>
+                        </div>
+                        <div class="flex items-end">
+                            <p class="text-3xl font-bold">18</p>
+                            <p class="text-sm text-gray-500 ml-2 mb-1">家</p>
+                        </div>
+                    </div>
+                    <div class="bg-white p-5 rounded-lg card-shadow">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-sm font-medium text-gray-500">待改进门店</h3>
+                            <span class="bg-red-100 text-red-800 text-xs px-2 py-1 rounded-full">+2</span>
+                        </div>
+                        <div class="flex items-end">
+                            <p class="text-3xl font-bold">5</p>
+                            <p class="text-sm text-gray-500 ml-2 mb-1">家</p>
+                        </div>
+                    </div>
+                    <div class="bg-white p-5 rounded-lg card-shadow">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-sm font-medium text-gray-500">已完成走访</h3>
+                            <span class="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded-full">85%</span>
+                        </div>
+                        <div class="flex items-end">
+                            <p class="text-3xl font-bold">23</p>
+                            <p class="text-sm text-gray-500 ml-2 mb-1">家</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 图表区域 -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                    <div class="bg-white p-5 rounded-lg card-shadow">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-medium">门店得分排名</h3>
+                            <div class="flex space-x-2">
+                            </div>
+                        </div>
+                        <div class="h-80">
+                            <canvas id="storeRankingChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="bg-white p-5 rounded-lg card-shadow">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-medium">服务模块得分分布</h3>
+                            <div class="flex space-x-2">
+                            </div>
+                        </div>
+                        <div class="h-80">
+                            <canvas id="serviceModuleChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 成绩列表 -->
+                <div class="bg-white rounded-lg card-shadow overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        门店名称
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        门店编码
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider" colspan="2">
+                                        2025-02期
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider" colspan="2">
+                                        2025-03期
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider" colspan="2">
+                                        2025-04期
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        操作
+                                    </th>
+                                </tr>
+                                <tr>
+                                    <th scope="col" class="px-6 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"></th>
+                                    <th scope="col" class="px-6 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"></th>
+                                    <th scope="col" class="px-6 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        名次<br>
+                                    </th>
+                                    <th scope="col" class="px-6 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        分数<br>(百分比: 73.11%)
+                                    </th>
+                                    <th scope="col" class="px-6 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        名次<br>
+                                    </th>
+                                    <th scope="col" class="px-6 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        分数<br>(百分比: 71.77%)
+                                    </th>
+                                    <th scope="col" class="px-6 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        名次<br>
+                                    </th>
+                                    <th scope="col" class="px-6 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        分数<br>(百分比: 62.56%)
+                                    </th>
+                                    <th scope="col" class="px-6 py-2 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"></th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                <!-- 门店1 -->
+                                <tr class="hover:bg-gray-50 transition-colors">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">上海丁香店</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">BF0175</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center">1</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-yellow-500 font-medium text-center">67.01%</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center">1</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-red-500 font-medium text-center">52.04%</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center">1</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-orange-500 font-medium text-center">89.00%</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                        <a href="store_report.html" class="text-primary hover:text-primary/80 mr-3">查看详情</a>
+                                        <button class="text-info hover:text-info/80">生成报告</button>
+                                    </td>
+                                </tr>
+                                
+                                <!-- 门店2 -->
+                                <tr class="hover:bg-gray-50 transition-colors">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">海口万象城店</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">BF0014</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center">2</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-yellow-500 font-medium text-center">76.29%</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center">2</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-red-500 font-medium text-center">39.18%</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center">2</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-orange-500 font-medium text-center">89.00%</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                        <a href="store_report.html" class="text-primary hover:text-primary/80 mr-3">查看详情</a>
+                                        <button class="text-info hover:text-info/80">生成报告</button>
+                                    </td>
+                                </tr>
+                                
+                                <!-- 门店3 -->
+                                <tr class="hover:bg-gray-50 transition-colors">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">深圳地王店</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">BF0077</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center">3</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-yellow-500 font-medium text-center">63.64%</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center">3</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-green-500 font-medium text-center">94.85%</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center">3</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-orange-500 font-medium text-center">88.00%</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                        <a href="store_report.html" class="text-primary hover:text-primary/80 mr-3">查看详情</a>
+                                        <button class="text-info hover:text-info/80">生成报告</button>
+                                    </td>
+                                </tr>
+                                
+                                <!-- 门店4 -->
+                                <tr class="hover:bg-gray-50 transition-colors">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">重庆光环公园店</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">BF0379</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center">4</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-yellow-500 font-medium text-center">76.29%</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center">4</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-green-500 font-medium text-center">78.35%</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center">4</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-orange-500 font-medium text-center">88.00%</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                        <a href="store_report.html" class="text-primary hover:text-primary/80 mr-3">查看详情</a>
+                                        <button class="text-info hover:text-info/80">生成报告</button>
+                                    </td>
+                                </tr>
+                                
+                                <!-- 门店5 -->
+                                <tr class="hover:bg-gray-50 transition-colors">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">重庆万象城店</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">BF0371</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center">5</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-orange-500 font-medium text-center">86.60%</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center">5</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-orange-500 font-medium text-center">86.60%</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center">5</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-orange-500 font-medium text-center">86.00%</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                        <a href="store_report.html" class="text-primary hover:text-primary/80 mr-3">查看详情</a>
+                                        <button class="text-info hover:text-info/80">生成报告</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- 分页 -->
+                    <div class="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
+                        <div class="text-sm text-gray-700">
+                            显示 <span class="font-medium">1</span> 到 <span class="font-medium">4</span> 条，共 <span class="font-medium">23</span> 条记录
+                        </div>
+                        <div class="flex space-x-1">
+                            <button class="px-3 py-1 rounded border border-gray-300 text-sm text-gray-500 hover:bg-gray-50 disabled:opacity-50" disabled>
+                                <i class="fa fa-chevron-left"></i>
+                            </button>
+                            <button class="px-3 py-1 rounded border border-primary bg-primary text-sm text-white">1</button>
+                            <button class="px-3 py-1 rounded border border-gray-300 text-sm text-gray-700 hover:bg-gray-50">2</button>
+                            <button class="px-3 py-1 rounded border border-gray-300 text-sm text-gray-700 hover:bg-gray-50">3</button>
+                            <button class="px-3 py-1 rounded border border-gray-300 text-sm text-gray-700 hover:bg-gray-50">4</button>
+                            <button class="px-3 py-1 rounded border border-gray-300 text-sm text-gray-500 hover:bg-gray-50">
+                                <i class="fa fa-chevron-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 成绩详情弹窗 -->
+                <div class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50" id="scoreDetailModal">
+                    <div class="bg-white rounded-lg w-full max-w-5xl max-h-[90vh] overflow-y-auto">
+                        <div class="flex items-center justify-between p-6 border-b">
+                            <h3 class="text-lg font-medium">门店成绩详情</h3>
+                            <button id="closeDetailModal" class="text-gray-500 hover:text-gray-700">
+                                <i class="fa fa-times text-xl"></i>
+                            </button>
+                        </div>
+                        <div class="p-6 space-y-6">
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                                <div class="border-b pb-2 md:border-0">
+                                    <h4 class="text-sm text-gray-500 mb-1">门店名称</h4>
+                                    <p class="text-base font-medium">上海万象天地店</p>
+                                </div>
+                                <div class="border-b pb-2 md:border-0">
+                                    <h4 class="text-sm text-gray-500 mb-1">神秘客期数</h4>
+                                    <p class="text-base">2025年第2期</p>
+                                </div>
+                                <div class="border-b pb-2 md:border-0">
+                                    <h4 class="text-sm text-gray-500 mb-1">走访日期</h4>
+                                    <p class="text-base">2025-06-15</p>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <div class="flex items-center justify-between mb-2">
+                                    <h4 class="text-base font-medium">综合得分</h4>
+                                    <p class="text-2xl font-bold text-success">92.80%</p>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-4">
+                                    <div class="bg-success h-4 rounded-full" style="width: 92.8%"></div>
+                                </div>
+                                <div class="flex justify-between mt-1 text-xs text-gray-500">
+                                    <span>0</span>
+                                    <span>50</span>
+                                    <span>100</span>
+                                </div>
+                            </div>
+                            
+                            <div class="border-b pb-4">
+                                <h4 class="text-base font-medium mb-3">模块得分详情</h4>
+                                <div class="space-y-4">
+                                    <div>
+                                        <div class="flex items-center justify-between mb-1">
+                                            <span class="text-sm">预约流程</span>
+                                            <span class="text-sm font-medium">95/100</span>
+                                        </div>
+                                        <div class="w-full bg-gray-200 rounded-full h-3">
+                                            <div class="bg-primary h-3 rounded-full" style="width: 95%"></div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="flex items-center justify-between mb-1">
+                                            <span class="text-sm">护理前接待</span>
+                                            <span class="text-sm font-medium">92/100</span>
+                                        </div>
+                                        <div class="w-full bg-gray-200 rounded-full h-3">
+                                            <div class="bg-primary h-3 rounded-full" style="width: 92%"></div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="flex items-center justify-between mb-1">
+                                            <span class="text-sm">护理体验</span>
+                                            <span class="text-sm font-medium">94/100</span>
+                                        </div>
+                                        <div class="w-full bg-gray-200 rounded-full h-3">
+                                            <div class="bg-primary h-3 rounded-full" style="width: 94%"></div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="flex items-center justify-between mb-1">
+                                            <span class="text-sm">护理后接待</span>
+                                            <span class="text-sm font-medium">90/100</span>
+                                        </div>
+                                        <div class="w-full bg-gray-200 rounded-full h-3">
+                                            <div class="bg-primary h-3 rounded-full" style="width: 90%"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="border-b pb-4">
+                                <h4 class="text-base font-medium mb-3">题目得分明细</h4>
+                                <div class="overflow-x-auto">
+                                    <table class="min-w-full divide-y divide-gray-200">
+                                        <thead class="bg-gray-50">
+                                            <tr>
+                                                <th scope="col" class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">题目编号</th>
+                                                <th scope="col" class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">题目内容</th>
+                                                <th scope="col" class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">得分</th>
+                                                <th scope="col" class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">满分</th>
+                                                <th scope="col" class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">完成情况</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="bg-white divide-y divide-gray-200">
+                                            <tr>
+                                                <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-900">1.1</td>
+                                                <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-900">客户助理接听电话时是否有自我介绍？</td>
+                                                <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-900">1</td>
+                                                <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-900">1</td>
+                                                <td class="px-4 py-2 whitespace-nowrap text-sm text-success">已完成</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-900">1.2</td>
+                                                <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-900">客户助理是否跟您确认预约信息？</td>
+                                                <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-900">1</td>
+                                                <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-900">1</td>
+                                                <td class="px-4 py-2 whitespace-nowrap text-sm text-success">已完成</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-900">2.1</td>
+                                                <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-900">客户经理是否在您到店后1分钟内迎接您？</td>
+                                                <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-900">2</td>
+                                                <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-900">2</td>
+                                                <td class="px-4 py-2 whitespace-nowrap text-sm text-success">已完成</td>
+                                            </tr>
+                                            <!-- 更多题目省略 -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            
+                            <div class="border-b pb-4">
+                                <h4 class="text-base font-medium mb-3">问题与改进建议</h4>
+                                <div class="p-4 border border-warning rounded-lg bg-warning/5">
+                                    <h5 class="text-sm font-medium text-warning mb-2">存在问题</h5>
+                                    <ul class="text-sm space-y-1 text-gray-700">
+                                        <li><i class="fa fa-circle text-xs text-warning mr-2"></i>护理后接待环节中，未主动引导顾客确认消费明细</li>
+                                        <li><i class="fa fa-circle text-xs text-warning mr-2"></i>客户经理未详细说明回访安排</li>
+                                    </ul>
+                                </div>
+                                <div class="p-4 mt-3 border border-success rounded-lg bg-success/5">
+                                    <h5 class="text-sm font-medium text-success mb-2">改进建议</h5>
+                                    <ul class="text-sm space-y-1 text-gray-700">
+                                        <li><i class="fa fa-check-circle text-xs text-success mr-2"></i>加强护理后接待流程培训，确保所有环节执行到位</li>
+                                        <li><i class="fa fa-check-circle text-xs text-success mr-2"></i>建立回访确认机制，提高客户满意度</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-6 border-t flex justify-end space-x-4">
+                            <button class="btn-secondary" id="cancelDetail">关闭</button>
+                            <button class="btn-primary">生成PDF报告</button>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+    
+    <!-- 脚本 -->
+    <script>
+        // 初始化图表
+        document.addEventListener('DOMContentLoaded', function() {
+            // 门店得分排名图表
+            const storeRankingCtx = document.getElementById('storeRankingChart').getContext('2d');
+            const storeRankingChart = new Chart(storeRankingCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['北京朝阳店', '上海静安店', '深圳南山店', '广州天河店', '杭州西湖店'],
+                    datasets: [{
+                        label: '得分',
+                        data: [92.8, 93.5, 89.8, 86.5, 91.2],
+                        backgroundColor: [
+                            'rgba(22, 93, 255, 0.6)',
+                            'rgba(22, 93, 255, 0.6)',
+                            'rgba(22, 93, 255, 0.6)',
+                            'rgba(22, 93, 255, 0.6)',
+                            'rgba(22, 93, 255, 0.6)'
+                        ],
+                        borderColor: [
+                            'rgba(22, 93, 255, 1)',
+                            'rgba(22, 93, 255, 1)',
+                            'rgba(22, 93, 255, 1)',
+                            'rgba(22, 93, 255, 1)',
+                            'rgba(22, 93, 255, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            min: 80,
+                            max: 100
+                        }
+                    }
+                }
+            });
+            
+            // 服务模块得分分布图表
+            const serviceModuleCtx = document.getElementById('serviceModuleChart').getContext('2d');
+            const serviceModuleChart = new Chart(serviceModuleCtx, {
+                type: 'radar',
+                data: {
+                    labels: ['预约流程', '护理前接待', '护理体验', '护理后接待', '总体感受'],
+                    datasets: [{
+                        label: '本期得分',
+                        data: [92, 89, 91, 88, 90],
+                        backgroundColor: 'rgba(22, 93, 255, 0.2)',
+                        borderColor: 'rgba(22, 93, 255, 1)',
+                        borderWidth: 2,
+                        pointBackgroundColor: 'rgba(22, 93, 255, 1)'
+                    }, {
+                        label: '上期得分',
+                        data: [88, 85, 87, 84, 86],
+                        backgroundColor: 'rgba(134, 144, 156, 0.2)',
+                        borderColor: 'rgba(134, 144, 156, 1)',
+                        borderWidth: 2,
+                        pointBackgroundColor: 'rgba(134, 144, 156, 1)'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            beginAtZero: true,
+                            min: 70,
+                            max: 100
+                        }
+                    }
+                }
+            });
+        });
+        
+        // 成绩详情弹窗
+        const detailModal = document.getElementById('scoreDetailModal');
+        
+        // 为所有查看详情按钮添加点击事件
+        document.querySelectorAll('button').forEach(button => {
+            if (button.textContent.trim() === '查看详情') {
+                button.addEventListener('click', function() {
+                    detailModal.classList.remove('hidden');
+                });
+            }
+        });
+        
+        // 关闭弹窗
+        document.getElementById('closeDetailModal').addEventListener('click', function() {
+            detailModal.classList.add('hidden');
+        });
+        
+        document.getElementById('cancelDetail').addEventListener('click', function() {
+            detailModal.classList.add('hidden');
+        });
+        
+        // 点击其他区域关闭弹窗
+        detailModal.addEventListener('click', function(event) {
+            if (event.target === detailModal) {
+                detailModal.classList.add('hidden');
+            }
+        });
+        
+        // 全选功能（检查元素是否存在）
+        const selectAllCheckbox = document.querySelector('thead input[type="checkbox"]');
+        const itemCheckboxes = document.querySelectorAll('tbody input[type="checkbox"]');
+        
+        if (selectAllCheckbox) {
+            selectAllCheckbox.addEventListener('change', function() {
+                itemCheckboxes.forEach(checkbox => {
+                    checkbox.checked = selectAllCheckbox.checked;
+                });
+            });
+        }
+        
+        // 悬停效果增强
+        const tableRows = document.querySelectorAll('tbody tr');
+        tableRows.forEach(row => {
+            row.addEventListener('mouseenter', function() {
+                this.classList.add('shadow-sm');
+            });
+            row.addEventListener('mouseleave', function() {
+                this.classList.remove('shadow-sm');
+            });
+        });
+        
+        // 分页按钮交互
+        const pageButtons = document.querySelectorAll('.flex.space-x-1 button:not(:disabled)');
+        pageButtons.forEach(button => {
+            if (!button.disabled) {
+                button.addEventListener('click', function() {
+                    pageButtons.forEach(btn => {
+                        btn.classList.remove('border-primary', 'bg-primary', 'text-white');
+                        btn.classList.add('border-gray-300', 'text-gray-700', 'hover:bg-gray-50');
+                    });
+                    this.classList.remove('border-gray-300', 'text-gray-700', 'hover:bg-gray-50');
+                    this.classList.add('border-primary', 'bg-primary', 'text-white');
+                });
+            }
+        });
+    </script>
+</body>
+</html>

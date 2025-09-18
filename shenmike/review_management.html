@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>审核管理</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#165DFF',
+                        secondary: '#4080FF',
+                        success: '#00B42A',
+                        warning: '#FF7D00',
+                        danger: '#F53F3F',
+                        info: '#86909C',
+                        light: '#F2F3F5',
+                        dark: '#1D2129',
+                    },
+                    fontFamily: {
+                        sans: ['PingFang SC', 'Helvetica Neue', 'Arial', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .sidebar-item-active {
+                background-color: #E8F3FF;
+                color: #165DFF;
+                border-right: 3px solid #165DFF;
+            }
+            .card-shadow {
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            }
+            .pagination-item {
+                width: 32px;
+                height: 32px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border-radius: 4px;
+                margin: 0 2px;
+            }
+            .pagination-item.active {
+                background-color: #165DFF;
+                color: white;
+            }
+            .pagination-item:hover:not(.active):not(:disabled) {
+                background-color: #F2F3F5;
+            }
+            .status-badge {
+                padding: 4px 8px;
+                border-radius: 100px;
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans text-dark">
+    <div class="flex h-screen overflow-hidden">
+        <!-- 侧边栏 -->
+        <aside class="w-64 bg-white h-full shadow-md flex-shrink-0">
+            <!-- 系统标题 -->
+            <div class="h-16 flex items-center justify-center border-b border-gray-200">
+                <h1 class="text-xl font-bold text-primary">CRM客户体验管理综合平台</h1>
+            </div>
+            
+            <!-- 侧边菜单 -->
+            <nav class="py-4">
+                <div class="px-4 py-2 text-xs font-medium text-gray-500">问卷管理</div>
+                <a href="#" class="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50">
+                    <i class="fa fa-list-ul w-6"></i>
+                    <span>问卷列表</span>
+                </a>
+                <a href="#" class="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50">
+                    <i class="fa fa-volume-up w-6"></i>
+                    <span>语音列表</span>
+                </a>
+                
+                <div class="px-4 py-2 text-xs font-medium text-gray-500 mt-4">神秘客调研</div>
+                <a href="admin_dashboard.html" class="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50">
+                    <i class="fa fa-tachometer w-6"></i>
+                    <span>控制台</span>
+                </a>
+                <a href="questionnaire_list.html" class="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50">
+                    <i class="fa fa-file-text-o w-6"></i>
+                    <span>神秘客问卷</span>
+                </a>
+                <a href="review_management.html" class="flex items-center px-4 py-3 text-sm sidebar-item-active">
+                    <i class="fa fa-tasks w-6"></i>
+                    <span>审核管理</span>
+                </a>
+                <a href="score_management.html" class="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50">
+                    <i class="fa fa-bar-chart w-6"></i>
+                    <span>成绩统计</span>
+                </a>
+                <a href="appeal_management.html" class="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50">
+                    <i class="fa fa-gavel w-6"></i>
+                    <span>申诉管理</span>
+                </a>
+                <a href="Master Data Management.html" class="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50">
+                    <i class="fa fa-building-o w-6"></i>
+                    <span>门店主数据</span>
+                </a>
+                
+                <div class="px-4 py-2 text-xs font-medium text-gray-500 mt-4">门店报告管理</div>
+                <a href="store_report_list.html" class="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50">
+                    <i class="fa fa-file-text w-6"></i>
+                    <span>报告列表</span>
+                </a>
+                
+                <div class="px-4 py-2 text-xs font-medium text-gray-500 mt-4">质控检查调研</div>
+                <a href="schedule_management.html" class="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50">
+                    <i class="fa fa-calendar w-6"></i>
+                    <span>排班管理</span>
+                </a>
+            </nav>
+        </aside>
+        
+        <!-- 主内容区 -->
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <!-- 顶部导航 -->
+            <header class="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-6">
+                <div class="flex items-center">
+                    <button class="mr-4 text-gray-500 hover:text-gray-700 lg:hidden">
+                        <i class="fa fa-bars"></i>
+                    </button>
+                    <div class="relative">
+                    </div>
+                </div>
+                
+                <div class="flex items-center space-x-4">
+                    <button class="text-gray-500 hover:text-gray-700 relative">
+                        <i class="fa fa-bell text-xl"></i>
+                        <span class="absolute -top-1 -right-1 bg-danger text-white text-xs w-4 h-4 flex items-center justify-center rounded-full">3</span>
+                    </button>
+                    <div class="flex items-center cursor-pointer hover:bg-gray-50 p-1 rounded">
+                        <img src="https://picsum.photos/id/1005/40/40" alt="用户头像" class="w-8 h-8 rounded-full object-cover mr-2">
+                        <span class="text-sm font-medium">管理员</span>
+                        <i class="fa fa-angle-down ml-1 text-gray-500"></i>
+                    </div>
+                </div>
+            </header>
+            
+            <!-- 内容区域 -->
+            <main class="flex-1 overflow-y-auto p-6">
+                <!-- 页面标题 -->
+                <div class="mb-6">
+                    <h2 class="text-[clamp(18px,3vw,24px)] font-medium">审核管理</h2>
+                    <p class="text-gray-500 text-sm mt-1">管理和分配录音审核任务</p>
+                </div>
+                
+                <!-- 统计卡片 -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+                    <div class="bg-white rounded-lg card-shadow p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-gray-500 text-sm">任务总数</p>
+                                <p class="text-3xl font-semibold mt-2">128</p>
+                                <p class="text-success text-xs mt-1">
+                                    <i class="fa fa-arrow-up mr-1"></i>12.5% 较上周
+                                </p>
+                            </div>
+                            <div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                                <i class="fa fa-list-alt text-xl"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-lg card-shadow p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-gray-500 text-sm">待审核任务</p>
+                                <p class="text-3xl font-semibold mt-2">45</p>
+                                <p class="text-danger text-xs mt-1">
+                                    <i class="fa fa-arrow-up mr-1"></i>8.2% 较上周
+                                </p>
+                            </div>
+                            <div class="w-12 h-12 rounded-full bg-warning/10 flex items-center justify-center text-warning">
+                                <i class="fa fa-clock-o text-xl"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-lg card-shadow p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-gray-500 text-sm">审核中任务</p>
+                                <p class="text-3xl font-semibold mt-2">23</p>
+                                <p class="text-success text-xs mt-1">
+                                    <i class="fa fa-arrow-up mr-1"></i>3.1% 较上周
+                                </p>
+                            </div>
+                            <div class="w-12 h-12 rounded-full bg-info/10 flex items-center justify-center text-info">
+                                <i class="fa fa-spinner text-xl"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-lg card-shadow p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-gray-500 text-sm">已审核任务</p>
+                                <p class="text-3xl font-semibold mt-2">60</p>
+                                <p class="text-success text-xs mt-1">
+                                    <i class="fa fa-arrow-up mr-1"></i>15.7% 较上周
+                                </p>
+                            </div>
+                            <div class="w-12 h-12 rounded-full bg-success/10 flex items-center justify-center text-success">
+                                <i class="fa fa-check-circle text-xl"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 任务分配区域 -->
+                <div class="bg-white rounded-lg card-shadow mb-6">
+                    <div class="flex flex-col md:flex-row md:items-center md:justify-between p-6 border-b border-gray-200">
+                        <h3 class="text-base font-medium">任务分配</h3>
+                        <div class="flex flex-wrap items-center gap-4 mt-4 md:mt-0">
+                            <button id="manualAssignBtn" class="px-4 py-1.5 bg-primary text-white rounded text-sm hover:bg-primary/90">
+                                <i class="fa fa-hand-paper-o mr-1"></i>手动分配
+                            </button>
+                            <button id="autoAssignBtn" class="px-4 py-1.5 border border-gray-300 rounded text-sm text-gray-700 hover:bg-gray-50">
+                                <i class="fa fa-random mr-1"></i>自动分配
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="p-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+                            <div>
+                                <label class="block text-sm text-gray-500 mb-1">选择审核员</label>
+                                <select class="w-full text-sm border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary">
+                                    <option value="">请选择审核员</option>
+                                    <option value="1">张小明</option>
+                                    <option value="2">李小华</option>
+                                    <option value="3">王小红</option>
+                                    <option value="4">赵小刚</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm text-gray-500 mb-1">任务数量</label>
+                                <input type="number" class="w-full text-sm border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary" placeholder="输入任务数量">
+                            </div>
+                            <div>
+                                <label class="block text-sm text-gray-500 mb-1">分配规则</label>
+                                <select class="w-full text-sm border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary">
+                                    <option value="">请选择分配规则</option>
+                                    <option value="1">按门店区域</option>
+                                    <option value="2">按审核员工作量</option>
+                                    <option value="3">按问卷类型</option>
+                                </select>
+                            </div>
+                            <div>
+                            <div class="flex justify-center">
+                            <button class="px-6 py-3 bg-primary text-white rounded text-sm hover:bg-primary/100">
+                                <i class="fa fa-check mr-1"></i>确认分配
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                
+                <!-- 任务列表 -->
+                <div class="bg-white rounded-lg card-shadow mb-6">
+                    <div class="flex flex-col md:flex-row md:items-center md:justify-between p-6 border-b border-gray-200">
+                        <h3 class="text-base font-medium">任务列表</h3>
+                        <div class="flex flex-wrap items-center gap-4 mt-4 md:mt-0">
+                            <div class="flex items-center space-x-2">
+                                <span class="text-sm text-gray-500">状态：</span>
+                                <select class="text-sm border border-gray-300 rounded px-3 py-1.5 focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary">
+                                    <option value="all">全部</option>
+                                    <option value="unassigned">待分配</option>
+                                    <option value="pending">待审核</option>
+                                    <option value="processing">审核中</option>
+                                    <option value="submitted">已提交</option>
+                                    <option value="completed">已完成</option>
+                                </select>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <span class="text-sm text-gray-500">审核员：</span>
+                                <select class="text-sm border border-gray-300 rounded px-3 py-1.5 focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary">
+                                    <option value="all">全部</option>
+                                    <option value="1">张小明</option>
+                                    <option value="2">李小华</option>
+                                    <option value="3">王小红</option>
+                                    <option value="4">赵小刚</option>
+                                </select>
+                            </div>
+                            <button class="px-4 py-1.5 bg-primary text-white rounded text-sm hover:bg-primary/90">
+                                <i class="fa fa-filter mr-1"></i>筛选
+                            </button>
+                            <button class="px-4 py-1.5 border border-gray-300 rounded text-sm text-gray-700 hover:bg-gray-50">
+                                <i class="fa fa-download mr-1"></i>导出
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm">
+                            <thead>
+                                <tr class="bg-gray-50 border-b border-gray-200">
+                                    <th class="py-3 px-4 text-left font-medium text-gray-500">
+                                        <div class="flex items-center">
+                                            <input type="checkbox" class="w-4 h-4 text-primary">
+                                            <span class="ml-2">答卷编号</span>
+                                        </div>
+                                    </th>
+                                    <th class="py-3 px-4 text-left font-medium text-gray-500">门店名称</th>
+                                    <th class="py-3 px-4 text-left font-medium text-gray-500">门店编号</th>
+                                    <th class="py-3 px-4 text-left font-medium text-gray-500">提交日期</th>
+                                    <th class="py-3 px-4 text-left font-medium text-gray-500">问卷得分</th>
+                                    <th class="py-3 px-4 text-left font-medium text-gray-500">录音时长</th>
+                                    <th class="py-3 px-4 text-left font-medium text-gray-500">任务状态</th>
+                                    <th class="py-3 px-4 text-left font-medium text-gray-500">操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="border-b border-gray-100 hover:bg-gray-50">
+                                    <td class="py-3 px-4">
+                                        <div class="flex items-center">
+                                            <input type="checkbox" class="w-4 h-4 text-primary">
+                                            <span class="ml-2">1967579606070378497</span>
+                                        </div>
+                                    </td>
+                                    <td class="py-3 px-4">上海陆家嘴中心店</td>
+                                    <td class="py-3 px-4">BF10101</td>
+                                    <td class="py-3 px-4">2025-09-15 21:52:44</td>
+                                    <td class="py-3 px-4">60.00%</td>
+                                    <td class="py-3 px-4">1小时45分钟</td>
+                                    <td class="py-3 px-4">
+                                        <span class="status-badge bg-gray-100 text-gray-700">待分配</span>
+                                    </td>
+                                    <td class="py-3 px-4">
+                                        <div class="flex space-x-2">
+                                            <button class="text-primary hover:text-primary/80" data-id="1967579606070378497">
+                                                <i class="fa fa-user-plus mr-1"></i>分配
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr class="border-b border-gray-100 hover:bg-gray-50">
+                                    <td class="py-3 px-4">
+                                        <div class="flex items-center">
+                                            <input type="checkbox" class="w-4 h-4 text-primary">
+                                            <span class="ml-2">1967579606070378498</span>
+                                        </div>
+                                    </td>
+                                    <td class="py-3 px-4">上海环宇城店</td>
+                                    <td class="py-3 px-4">BF10102</td>
+                                    <td class="py-3 px-4">2025-09-15 20:30:15</td>
+                                    <td class="py-3 px-4">75.00%</td>
+                                    <td class="py-3 px-4">1小时20分钟</td>
+                                    <td class="py-3 px-4">
+                                        <span class="status-badge bg-warning/10 text-warning">待审核</span>
+                                    </td>
+                                    <td class="py-3 px-4">
+                                        <div class="flex space-x-2">
+                                            <button class="text-primary hover:text-primary/80 go-to-review" data-id="1967579606070378498">
+                                                <i class="fa fa-headphones mr-1"></i>去审核
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr class="border-b border-gray-100 hover:bg-gray-50">
+                                    <td class="py-3 px-4">
+                                        <div class="flex items-center">
+                                            <input type="checkbox" class="w-4 h-4 text-primary">
+                                            <span class="ml-2">1967579606070378499</span>
+                                        </div>
+                                    </td>
+                                    <td class="py-3 px-4">上海盈丰天地店</td>
+                                    <td class="py-3 px-4">BF10103</td>
+                                    <td class="py-3 px-4">2025-09-15 18:45:32</td>
+                                    <td class="py-3 px-4">82.00%</td>
+                                    <td class="py-3 px-4">50分钟</td>
+                                    <td class="py-3 px-4">
+                                        <span class="status-badge bg-info/10 text-info">审核中</span>
+                                    </td>
+                                    <td class="py-3 px-4">
+                                        <div class="flex space-x-2">
+                                            <button class="text-primary hover:text-primary/80 go-to-review" data-id="1967579606070378499">
+                                                <i class="fa fa-headphones mr-1"></i>继续审核
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr class="border-b border-gray-100 hover:bg-gray-50">
+                                    <td class="py-3 px-4">
+                                        <div class="flex items-center">
+                                            <input type="checkbox" class="w-4 h-4 text-primary">
+                                            <span class="ml-2">1967579606070378500</span>
+                                        </div>
+                                    </td>
+                                    <td class="py-3 px-4">上海环球港店</td>
+                                    <td class="py-3 px-4">BF10104</td>
+                                    <td class="py-3 px-4">2025-09-15 16:20:48</td>
+                                    <td class="py-3 px-4">68.50%</td>
+                                    <td class="py-3 px-4">1小时30分钟</td>
+                                    <td class="py-3 px-4">
+                                        <span class="status-badge bg-secondary/10 text-secondary">已提交</span>
+                                    </td>
+                                    <td class="py-3 px-4">
+                                        <div class="flex space-x-2">
+                                            <button class="text-primary hover:text-primary/80" data-id="1967579606070378500">
+                                                <i class="fa fa-eye mr-1"></i>查看
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr class="border-b border-gray-100 hover:bg-gray-50">
+                                    <td class="py-3 px-4">
+                                        <div class="flex items-center">
+                                            <input type="checkbox" class="w-4 h-4 text-primary">
+                                            <span class="ml-2">1967579606070378501</span>
+                                        </div>
+                                    </td>
+                                    <td class="py-3 px-4">上海长泰店</td>
+                                    <td class="py-3 px-4">BF10105</td>
+                                    <td class="py-3 px-4">2025-09-15 14:15:22</td>
+                                    <td class="py-3 px-4">92.00%</td>
+                                    <td class="py-3 px-4">1小时15分钟</td>
+                                    <td class="py-3 px-4">
+                                        <span class="status-badge bg-success/10 text-success">已完成</span>
+                                    </td>
+                                    <td class="py-3 px-4">
+                                        <div class="flex space-x-2">
+                                            <button class="text-primary hover:text-primary/80" data-id="1967579606070378501">
+                                                <i class="fa fa-eye mr-1"></i>查看
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- 分页 -->
+                    <div class="flex flex-col md:flex-row md:items-center md:justify-between p-4 border-t border-gray-200">
+                        <div class="text-sm text-gray-500 mb-4 md:mb-0">
+                            共 <span class="font-medium text-primary">128</span> 条记录，当前显示第 <span class="font-medium text-primary">1-5</span> 条
+                        </div>
+                        <div class="flex items-center">
+                            <button class="pagination-item text-sm text-gray-500" disabled>
+                                <i class="fa fa-angle-left"></i>
+                            </button>
+                            <button class="pagination-item text-sm active">1</button>
+                            <button class="pagination-item text-sm text-gray-700">2</button>
+                            <button class="pagination-item text-sm text-gray-700">3</button>
+                            <button class="pagination-item text-sm text-gray-700">4</button>
+                            <button class="pagination-item text-sm text-gray-700">5</button>
+                            <button class="pagination-item text-sm text-gray-700">...</button>
+                            <button class="pagination-item text-sm text-gray-700">26</button>
+                            <button class="pagination-item text-sm text-gray-500">
+                                <i class="fa fa-angle-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+    
+    <!-- 自动分配弹窗 -->
+    <div id="autoAssignModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg w-full max-w-xl">
+            <div class="flex items-center justify-between p-6 border-b border-gray-200">
+                <h3 class="text-lg font-medium">自动分配任务</h3>
+                <button id="closeAutoAssignModal" class="text-gray-500 hover:text-gray-700">
+                    <i class="fa fa-times"></i>
+                </button>
+            </div>
+            <div class="p-6">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm text-gray-500 mb-1">分配规则</label>
+                        <select class="w-full text-sm border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary">
+                            <option value="1">按门店区域</option>
+                            <option value="2">按审核员工作量负载均衡</option>
+                            <option value="3">按问卷类型</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm text-gray-500 mb-1">分配数量</label>
+                        <input type="number" class="w-full text-sm border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary" placeholder="输入任务数量">
+                    </div>
+                    <div>
+                        <label class="block text-sm text-gray-500 mb-1">指定门店区域（可选）</label>
+                        <select class="w-full text-sm border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary">
+                            <option value="">全部区域</option>
+                            <option value="east">华东区</option>
+                            <option value="south">华南区</option>
+                            <option value="north">华北区</option>
+                            <option value="west">华西区</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="flex justify-end space-x-3 mt-6">
+                    <button id="cancelAutoAssignBtn" class="px-4 py-1.5 border border-gray-300 rounded text-sm text-gray-700 hover:bg-gray-50">取消</button>
+                    <button id="confirmAutoAssignBtn" class="px-4 py-1.5 bg-primary text-white rounded text-sm hover:bg-primary/90">确认分配</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 手动分配弹窗 -->
+    <div id="manualAssignModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg w-full max-w-xl">
+            <div class="flex items-center justify-between p-6 border-b border-gray-200">
+                <h3 class="text-lg font-medium">手动分配任务</h3>
+                <button id="closeManualAssignModal" class="text-gray-500 hover:text-gray-700">
+                    <i class="fa fa-times"></i>
+                </button>
+            </div>
+            <div class="p-6">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm text-gray-500 mb-1">选择审核员</label>
+                        <select class="w-full text-sm border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary">
+                            <option value="">请选择审核员</option>
+                            <option value="1">张小明</option>
+                            <option value="2">李小华</option>
+                            <option value="3">王小红</option>
+                            <option value="4">赵小刚</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm text-gray-500 mb-1">选择任务</label>
+                        <select multiple class="w-full text-sm border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary" style="height: 120px;">
+                            <option value="1967579606070378497">1967579606070378497 - 上海陆家嘴中心店</option>
+                            <option value="1967579606070378502">1967579606070378502 - 上海五角场店</option>
+                            <option value="1967579606070378503">1967579606070378503 - 上海静安寺店</option>
+                            <option value="1967579606070378504">1967579606070378504 - 上海南京东路店</option>
+                            <option value="1967579606070378505">1967579606070378505 - 上海徐家汇店</option>
+                        </select>
+                        <p class="text-xs text-gray-500 mt-1">按住Ctrl键可多选</p>
+                    </div>
+                </div>
+                <div class="flex justify-end space-x-3 mt-6">
+                    <button id="cancelManualAssignBtn" class="px-4 py-1.5 border border-gray-300 rounded text-sm text-gray-700 hover:bg-gray-50">取消</button>
+                    <button id="confirmManualAssignBtn" class="px-4 py-1.5 bg-primary text-white rounded text-sm hover:bg-primary/90">确认分配</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // 自动分配弹窗
+        document.getElementById('autoAssignBtn').addEventListener('click', function() {
+            document.getElementById('autoAssignModal').classList.remove('hidden');
+        });
+        
+        document.getElementById('closeAutoAssignModal').addEventListener('click', function() {
+            document.getElementById('autoAssignModal').classList.add('hidden');
+        });
+        
+        document.getElementById('cancelAutoAssignBtn').addEventListener('click', function() {
+            document.getElementById('autoAssignModal').classList.add('hidden');
+        });
+        
+        document.getElementById('confirmAutoAssignBtn').addEventListener('click', function() {
+            alert('自动分配成功！');
+            document.getElementById('autoAssignModal').classList.add('hidden');
+        });
+        
+        // 手动分配弹窗
+        document.getElementById('manualAssignBtn').addEventListener('click', function() {
+            document.getElementById('manualAssignModal').classList.remove('hidden');
+        });
+        
+        document.getElementById('closeManualAssignModal').addEventListener('click', function() {
+            document.getElementById('manualAssignModal').classList.add('hidden');
+        });
+        
+        document.getElementById('cancelManualAssignBtn').addEventListener('click', function() {
+            document.getElementById('manualAssignModal').classList.add('hidden');
+        });
+        
+        document.getElementById('confirmManualAssignBtn').addEventListener('click', function() {
+            alert('手动分配成功！');
+            document.getElementById('manualAssignModal').classList.add('hidden');
+        });
+        
+        // 去审核按钮点击事件
+        document.querySelectorAll('.go-to-review').forEach(button => {
+            button.addEventListener('click', function() {
+                const taskId = this.getAttribute('data-id');
+                // 跳转到audio_review.html页面，并传递任务ID参数
+                window.location.href = `audio_review.html?taskId=${taskId}`;
+            });
+        });
+        
+        // 点击模态框外部关闭
+        window.addEventListener('click', function(event) {
+            const autoModal = document.getElementById('autoAssignModal');
+            const manualModal = document.getElementById('manualAssignModal');
+            
+            if (event.target === autoModal) {
+                autoModal.classList.add('hidden');
+            }
+            
+            if (event.target === manualModal) {
+                manualModal.classList.add('hidden');
+            }
+        });
+    </script>
+</body>
+</html>

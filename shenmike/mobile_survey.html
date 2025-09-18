@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>移动端问卷填写</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#165DFF',
+                        secondary: '#4080FF',
+                        success: '#00B42A',
+                        warning: '#FF7D00',
+                        danger: '#F53F3F',
+                        info: '#86909C',
+                        light: '#F2F3F5',
+                        dark: '#1D2129',
+                    },
+                    fontFamily: {
+                        sans: ['PingFang SC', 'Helvetica Neue', 'Arial', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .wechat-shadow {
+                box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+            }
+            .form-item {
+                margin-bottom: 24px;
+            }
+            .radio-item {
+                position: relative;
+                padding-left: 36px;
+                margin-bottom: 12px;
+                line-height: 24px;
+            }
+            .radio-item input[type="radio"] {
+                position: absolute;
+                opacity: 0;
+            }
+            .radio-item .radio-check {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 24px;
+                height: 24px;
+                border: 1px solid #D9D9D9;
+                border-radius: 50%;
+                background-color: #fff;
+            }
+            .radio-item input[type="radio"]:checked + .radio-check {
+                border-color: #165DFF;
+                background-color: #fff;
+            }
+            .radio-item input[type="radio"]:checked + .radio-check::after {
+                content: '';
+                position: absolute;
+                left: 7px;
+                top: 7px;
+                width: 8px;
+                height: 8px;
+                border-radius: 50%;
+                background-color: #165DFF;
+            }
+            .checkbox-item {
+                position: relative;
+                padding-left: 36px;
+                margin-bottom: 12px;
+                line-height: 24px;
+            }
+            .checkbox-item input[type="checkbox"] {
+                position: absolute;
+                opacity: 0;
+            }
+            .checkbox-item .checkbox-check {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 24px;
+                height: 24px;
+                border: 1px solid #D9D9D9;
+                border-radius: 4px;
+                background-color: #fff;
+            }
+            .checkbox-item input[type="checkbox"]:checked + .checkbox-check {
+                border-color: #165DFF;
+                background-color: #165DFF;
+            }
+            .checkbox-item input[type="checkbox"]:checked + .checkbox-check::after {
+                content: '✓';
+                position: absolute;
+                left: 6px;
+                top: 0;
+                color: white;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans text-dark max-w-md mx-auto h-screen flex flex-col">
+    <!-- 页面容器 -->
+    <div class="flex-1 overflow-y-auto bg-white">
+        <!-- 顶部导航栏 -->
+        <div class="sticky top-0 z-10 bg-white border-b border-gray-200">
+            <div class="flex items-center justify-between h-14 px-4">
+                <button id="backBtn" class="text-gray-500">
+                    <i class="fa fa-chevron-left"></i>
+                </button>
+                <h1 class="text-lg font-medium">美丽田园生美直营门店指控检查标准评估</h1>
+                <div class="w-6"></div>
+            </div>
+            
+            <!-- 进度条 -->
+            <div class="px-4 pb-3">
+                <div class="flex items-center justify-between mb-1">
+                    <span class="text-xs text-gray-500">完成度</span>
+                    <span class="text-xs text-primary">3/15</span>
+                </div>
+                <div class="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                    <div class="h-full bg-primary rounded-full" style="width: 20%"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 表单内容 -->
+        <div class="p-4">
+            <!-- 走访信息 -->
+            <div class="bg-primary/5 rounded-lg p-4 mb-6">
+                <h2 class="text-base font-medium mb-3">走访信息</h2>
+                <div class="space-y-3">
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm text-gray-500">门店名称</span>
+                        <span class="text-sm font-medium">上海陆家嘴中心店</span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm text-gray-500">检查日期</span>
+                        <span class="text-sm font-medium">2025-08-01</span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm text-gray-500">检查时间</span>
+                        <span class="text-sm font-medium"> 15:10至18:30</span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm text-gray-500">检查人员姓名</span>
+                        <span class="text-sm font-medium">李小仙</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 预约服务模块 -->
+            <div class="mb-8">
+                <div class="flex items-center mb-4">
+                    <div class="w-6 h-6 bg-primary text-white rounded-full flex items-center justify-center text-xs font-medium mr-2">1</div>
+                    <h2 class="text-base font-medium">市场监督</h2>
+                </div>
+                
+                <!-- 单选题 -->
+                <div class="form-item">
+                    <label class="block text-sm font-medium mb-2">
+                        1.1 【市场监督-证照】相关证照（营业执照、公共场所卫生许可证、消防验收合格证）按标准公示在大堂醒目位置，并确保在有效期内 <span class="text-danger">*</span>
+                    </label>
+                    <div class="radio-group">
+                        <div class="radio-item">
+                            <input type="radio" name="question1" id="q1a1">
+                            <label for="q1a1" class="text-sm cursor-pointer">
+                                <span class="radio-check"></span>
+                                合格
+                            </label>
+                        </div>
+                        <div class="radio-item">
+                            <input type="radio" name="question1" id="q1a2" checked>
+                            <label for="q1a2" class="text-sm cursor-pointer">
+                                <span class="radio-check"></span>
+                                不合格
+                            </label>
+                        </div>
+                        <div class="radio-item">
+                            <input type="radio" name="question1" id="q1a3">
+                            <label for="q1a3" class="text-sm cursor-pointer">
+                                <span class="radio-check"></span>
+                                NA
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 单选题 -->
+                <div class="form-item">
+                    <label class="block text-sm font-medium mb-2">
+                        1.2 【市场监督-宣传资料】前台需存放最新经研发部确认的合规产品价目表及护理价目表，打印塑封，外观平整，无污渍、无破损、无翘角 <span class="text-danger">*</span>
+                    </label>
+                    <div class="radio-group">
+                        <div class="radio-item">
+                            <input type="radio" name="question2" id="q2a1">
+                            <label for="q2a1" class="text-sm cursor-pointer">
+                                <span class="radio-check"></span>
+                                合格
+                            </label>
+                        </div>
+                        <div class="radio-item">
+                            <input type="radio" name="question2" id="q2a2" checked>
+                            <label for="q2a2" class="text-sm cursor-pointer">
+                                <span class="radio-check"></span>
+                                不合格
+                            </label>
+                        </div>
+                        <div class="radio-item">
+                            <input type="radio" name="question2" id="q2a3">
+                            <label for="q2a3" class="text-sm cursor-pointer">
+                                <span class="radio-check"></span>
+                                NA
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 多选题 -->
+                <div class="form-item">
+                    <label class="block text-sm font-medium mb-2">
+            
+            <!-- 护理前接待模块 -->
+            <div class="mb-8">
+                <div class="flex items-center mb-4">
+                    <div class="w-6 h-6 bg-primary text-white rounded-full flex items-center justify-center text-xs font-medium mr-2">2</div>
+                    <h2 class="text-base font-medium">护理前接待</h2>
+                </div>
+                
+                <!-- 单选题 -->
+                <div class="form-item">
+                    <label class="block text-sm font-medium mb-2">
+                        4. 您到达门店后，服务人员是否在1分钟内接待您？ <span class="text-danger">*</span>
+                    </label>
+                    <div class="radio-group">
+                        <div class="radio-item">
+                            <input type="radio" name="question4" id="q4a1" checked>
+                            <label for="q4a1" class="text-sm cursor-pointer">
+                                <span class="radio-check"></span>
+                                是
+                            </label>
+                        </div>
+                        <div class="radio-item">
+                            <input type="radio" name="question4" id="q4a2">
+                            <label for="q4a2" class="text-sm cursor-pointer">
+                                <span class="radio-check"></span>
+                                否，等待了超过1分钟
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 评分题 -->
+                <div class="form-item">
+                    <label class="block text-sm font-medium mb-3">
+                        5. 请对服务人员的接待态度进行评分 <span class="text-danger">*</span>
+                    </label>
+                    <div class="flex items-center justify-between">
+                        <div class="flex">
+                            <i class="fa fa-star text-primary text-xl"></i>
+                            <i class="fa fa-star text-primary text-xl ml-2"></i>
+                            <i class="fa fa-star text-primary text-xl ml-2"></i>
+                            <i class="fa fa-star-o text-gray-300 text-xl ml-2"></i>
+                            <i class="fa fa-star-o text-gray-300 text-xl ml-2"></i>
+                        </div>
+                        <span class="text-sm text-gray-500">3分</span>
+                    </div>
+                </div>
+                
+                <!-- 多选题带填空 -->
+                <div class="form-item">
+                    <label class="block text-sm font-medium mb-2">
+                        6. 护理前接待流程中，服务人员提供了哪些服务？（可多选） <span class="text-danger">*</span>
+                    </label>
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="checkbox" name="question6" id="q6a1" checked>
+                            <label for="q6a1" class="text-sm cursor-pointer">
+                                <span class="checkbox-check"></span>
+                                热情问候 <span class="text-xs text-gray-500">(3分)</span>
+                            </label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" name="question6" id="q6a2" checked>
+                            <label for="q6a2" class="text-sm cursor-pointer">
+                                <span class="checkbox-check"></span>
+                                递上茶水 <span class="text-xs text-gray-500">(2分)</span>
+                            </label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" name="question6" id="q6a3">
+                            <label for="q6a3" class="text-sm cursor-pointer">
+                                <span class="checkbox-check"></span>
+                                引导入座
+                            </label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" name="question6" id="q6a4">
+                            <label for="q6a4" class="text-sm cursor-pointer">
+                                <span class="checkbox-check"></span>
+                                其他服务
+                                <input type="text" placeholder="请输入" class="ml-2 px-2 py-1 border border-gray-200 rounded text-xs w-32">
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 填空题 -->
+                <div class="form-item">
+                    <label class="block text-sm font-medium mb-2">
+                        7. 请简要描述护理前的接待流程 <span class="text-danger">*</span>
+                    </label>
+                    <textarea rows="3" placeholder="请输入您的描述" class="w-full px-3 py-2 border border-gray-200 rounded text-sm" style="resize: none;">服务人员热情迎接，引导至休息区，询问了我的需求并提供了茶水服务。</textarea>
+                </div>
+                
+                <!-- 录音题 -->
+                <div class="form-item">
+                    <label class="block text-sm font-medium mb-3">
+                        8. 请上传护理前接待的录音 <span class="text-danger">*</span>
+                    
+                    <!-- 已上传录音 -->
+                    <div id="recordingPlayback" class="mt-3 p-3 bg-gray-50 rounded-lg">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <i class="fa fa-file-audio-o text-primary mr-2"></i>
+                                <span class="text-sm">护理前接待录音.mp3</span>
+                            </div>
+                            <div class="flex items-center space-x-3">
+                                <span class="text-xs text-gray-500">02:15</span>
+                                <button id="playRecording" class="text-primary">
+                                    <i class="fa fa-play"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 图片上传题 -->
+                <div class="form-item">
+                    <label class="block text-sm font-medium mb-3">
+                        9. 请上传门店环境照片 <span class="text-danger">*</span>
+                    </label>
+                    <div class="grid grid-cols-3 gap-2">
+                        <div class="aspect-square bg-gray-100 rounded-lg flex items-center justify-center border border-dashed border-gray-300">
+                            <i class="fa fa-camera text-gray-400"></i>
+                        </div>
+                        <div class="aspect-square rounded-lg overflow-hidden relative">
+                            <img src="https://picsum.photos/id/238/200/200" alt="门店环境" class="w-full h-full object-cover">
+                            <button class="absolute top-1 right-1 w-5 h-5 bg-black/50 rounded-full flex items-center justify-center text-white">
+                                <i class="fa fa-times text-xs"></i>
+                            </button>
+                        </div>
+                        <div class="aspect-square rounded-lg overflow-hidden relative">
+                            <img src="https://picsum.photos/id/238/200/200" alt="门店环境" class="w-full h-full object-cover">
+                            <button class="absolute top-1 right-1 w-5 h-5 bg-black/50 rounded-full flex items-center justify-center text-white">
+                                <i class="fa fa-times text-xs"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-2">最多上传9张照片</p>
+                </div>
+            </div>
+            
+            <!-- 护理体验模块（部分显示，其他通过条件跳转控制） -->
+            <div class="mb-8">
+                <div class="flex items-center mb-4">
+                    <div class="w-6 h-6 bg-gray-300 text-white rounded-full flex items-center justify-center text-xs font-medium mr-2">3</div>
+                    <h2 class="text-base font-medium text-gray-500">护理体验</h2>
+                </div>
+                
+                <div class="p-4 bg-gray-50 rounded-lg text-center">
+                    <p class="text-sm text-gray-500">完成前面的问题后才能继续</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 底部操作栏 -->
+    <div class="wechat-shadow bg-white p-4">
+        <div class="flex items-center justify-between mb-3">
+            <div class="text-sm text-gray-500">
+            </div>
+            </button>
+        </div>
+        <button id="nextBtn" class="w-full bg-primary text-white py-3 rounded-lg font-medium">
+            下一页
+        </button>
+    </div>
+    
+    <!-- 提交确认弹窗 -->
+    <div id="submitModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg w-4/5 p-5">
+            <h3 class="text-lg font-medium text-center mb-3">提交确认</h3>
+            <p class="text-sm text-gray-700 text-center mb-5">
+                问卷尚未完成，确定要提交当前进度吗？<br>
+                提交后将无法修改。
+            </p>
+            <div class="flex space-x-3">
+                <button id="cancelSubmitBtn" class="flex-1 py-2.5 border border-gray-300 rounded-lg text-gray-700 font-medium">
+                    取消
+                </button>
+                <button id="confirmSubmitBtn" class="flex-1 py-2.5 bg-primary text-white rounded-lg font-medium">
+                    确认提交
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 保存成功提示 -->
+    <div id="saveToast" class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-black/70 text-white px-4 py-2 rounded-lg text-sm hidden">
+        草稿保存成功
+    </div>
+    
+    <!-- 录音中提示 -->
+    <div id="recordingToast" class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-black/70 text-white px-4 py-2 rounded-lg text-sm hidden">
+        <i class="fa fa-microphone mr-1"></i>录音中...
+    </div>
+    
+    <!-- 未完成作答提示 -->
+    <div id="incompleteToast" class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-black/70 text-white px-4 py-3 rounded-lg text-sm hidden">
+        <p id="incompleteMessage"></p>
+        <div id="incompleteQuestions" class="mt-2 text-xs"></div>
+    </div>
+    
+    <!-- 审核人员签字页面 -->
+    <div id="signatureModal" class="fixed inset-0 bg-gray-50 z-50 hidden">
+        <div class="max-w-md mx-auto h-screen flex flex-col bg-white">
+            <div class="p-4 border-b border-gray-200 flex items-center justify-between">
+                <button id="backFromSignatureBtn" class="text-gray-500">
+                    <i class="fa fa-chevron-left"></i>
+                </button>
+                <h2 class="text-lg font-medium">审核人员签字</h2>
+                <div class="w-6"></div>
+            </div>
+            
+            <div class="flex-1 p-4">
+                <p class="text-sm mb-4">请在下方签署您的姓名：</p>
+                
+                <!-- 签署区域 -->
+                <div class="bg-gray-50 p-4 rounded-lg mb-4">
+                    <div class="flex justify-between items-center mb-3">
+                        <span class="text-sm font-medium">签署人</span>
+                        <span class="text-sm">审核日期：<span id="currentDate"></span></span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                    </div>
+                </div>
+                <!-- 空白电子签名区域 -->
+                    <div class="bg-white border-2 border-dashed border-gray-400 rounded-lg mb-6 relative">
+                        <canvas id="signatureCanvas" class="w-full bg-white" height="300"></canvas>
+                        <div id="signaturePlaceholder" class="absolute inset-0 flex items-center justify-center pointer-events-none">
+                            <span class="text-gray-400 text-sm">请在此处签字</span>
+                        </div>
+                    </div>
+                <div class="flex space-x-3">
+                    <button id="clearSignatureBtn" class="flex-1 py-3 border border-gray-300 rounded-lg text-gray-700 font-medium">
+                        清除
+                    </button>
+                    <button id="saveSignatureBtn" class="flex-1 py-3 bg-primary text-white rounded-lg font-medium">
+                        保存并提交
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 脚本 -->
+    <script>
+        // 返回按钮
+        document.getElementById('backBtn').addEventListener('click', function() {
+            if (confirm('确定要离开当前页面吗？未保存的内容可能会丢失。')) {
+                // 模拟返回上一页
+                console.log('返回上一页');
+            }
+        });
+        
+        // 下一页按钮
+        document.getElementById('nextBtn').addEventListener('click', function() {
+            // 检查必填项
+            const missingQuestions = validateForm();
+            
+            if (missingQuestions.length === 0) {
+                // 所有必填项都已填写，显示签字页面
+                document.getElementById('signatureModal').classList.remove('hidden');
+            } else {
+                // 显示未完成作答提示
+                showIncompleteToast(missingQuestions);
+            }
+        });
+        
+        // 校验表单必填项
+        function validateForm() {
+            const missingQuestions = [];
+            
+            // 检查单选题
+            const radioGroups = document.querySelectorAll('.radio-group');
+            radioGroups.forEach((group, index) => {
+                const questionNum = index + 1; // 问题编号从1开始
+                const isAnswered = Array.from(group.querySelectorAll('input[type="radio"]')).some(radio => radio.checked);
+                
+                if (!isAnswered) {
+                    missingQuestions.push(questionNum);
+                } else {
+                    // 检查是否选择了不合格或NA但没有备注
+                    const isUnqualified = group.querySelector('input[id$="a2"]:checked');
+                    const isNA = group.querySelector('input[id$="a3"]:checked');
+                    
+                    if ((isUnqualified || isNA) && !hasRemarkForQuestion(questionNum)) {
+                        missingQuestions.push(`Q${questionNum}（请添加备注说明）`);
+                    }
+                }
+            });
+            
+            // 检查评分题
+            const ratingQuestions = document.querySelectorAll('.form-item:has(div.flex.items-center.justify-between .fa-star)');
+            ratingQuestions.forEach((item, index) => {
+                const questionNum = 5; // 评分题是第5题
+                const hasRating = item.querySelector('.fa-star.text-primary');
+                
+                if (!hasRating) {
+                    missingQuestions.push(questionNum);
+                }
+            });
+            
+            // 检查多选题
+            const checkboxGroups = document.querySelectorAll('.checkbox-group');
+            checkboxGroups.forEach((group, index) => {
+                const questionNum = 6; // 多选题是第6题
+                const isAnswered = Array.from(group.querySelectorAll('input[type="checkbox"]')).some(checkbox => checkbox.checked);
+                
+                if (!isAnswered) {
+                    missingQuestions.push(questionNum);
+                }
+            });
+            
+            // 检查填空题
+            const textarea = document.querySelector('textarea[placeholder="请输入您的描述"]');
+            if (textarea && textarea.value.trim() === '') {
+                missingQuestions.push(7); // 填空题是第7题
+            }
+            
+            // 检查录音题
+            const recordingPlayback = document.getElementById('recordingPlayback');
+            if (!recordingPlayback) {
+                missingQuestions.push(8); // 录音题是第8题
+            }
+            
+            // 检查图片上传题
+            const uploadedImages = document.querySelectorAll('.aspect-square.rounded-lg.overflow-hidden');
+            if (uploadedImages.length === 0) {
+                missingQuestions.push(9); // 图片上传题是第9题
+            }
+            
+            return missingQuestions;
+        }
+        
+        // 检查问题是否有备注
+        function hasRemarkForQuestion(questionNum) {
+            // 在实际应用中，这里会检查对应的备注输入框是否有内容
+            // 目前只是模拟实现
+            return true;
+        }
+        
+        // 显示未完成作答提示
+        function showIncompleteToast(missingQuestions) {
+            const toast = document.getElementById('incompleteToast');
+            const message = document.getElementById('incompleteMessage');
+            const questionsList = document.getElementById('incompleteQuestions');
+            
+            message.textContent = `以下 ${missingQuestions.length} 题尚未完成作答：`;
+            questionsList.innerHTML = missingQuestions.map(q => `• ${q}`).join('<br>');
+            
+            toast.classList.remove('hidden');
+            
+            // 3秒后自动隐藏
+            setTimeout(() => {
+                toast.classList.add('hidden');
+                // 定位到第一个未完成的问题
+                if (missingQuestions.length > 0) {
+                    const firstMissing = missingQuestions[0];
+                    if (typeof firstMissing === 'number') {
+                        const questionElement = document.querySelector(`label:contains("${firstMissing}.")`);
+                        if (questionElement) {
+                            questionElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            // 高亮显示
+                            questionElement.classList.add('bg-yellow-100');
+                            setTimeout(() => {
+                                questionElement.classList.remove('bg-yellow-100');
+                            }, 2000);
+                        }
+                    }
+                }
+            }, 3000);
+        }
+        
+        // 设置当前日期
+        document.addEventListener('DOMContentLoaded', function() {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            const formattedDate = `${year}-${month}-${day}`;
+            document.getElementById('currentDate').textContent = formattedDate;
+        });
+        
+        // 初始化签字画布
+        const canvas = document.getElementById('signatureCanvas');
+        const ctx = canvas.getContext('2d');
+        let isDrawing = false;
+        let lastX = 0;
+        let lastY = 0;
+        
+        // 设置canvas为相对定位，使placeholder可以绝对定位在其中
+        canvas.style.position = 'relative';
+        
+        // 设置画布大小以匹配其显示大小
+        function resizeCanvas() {
+            const rect = canvas.getBoundingClientRect();
+            canvas.width = rect.width;
+            canvas.height = rect.height;
+        }
+        
+        // 窗口大小改变时重设画布大小
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+        
+        // 开始绘制
+        function startDrawing(e) {
+            isDrawing = true;
+            [lastX, lastY] = [e.offsetX, e.offsetY];
+            
+            // 隐藏提示文本
+            const placeholder = document.getElementById('signaturePlaceholder');
+            if (placeholder) {
+                placeholder.classList.add('hidden');
+            }
+        }
+        
+        // 绘制线条
+        function draw(e) {
+            if (!isDrawing) return;
+            ctx.lineWidth = 2;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            ctx.strokeStyle = '#000';
+            
+            ctx.beginPath();
+            ctx.moveTo(lastX, lastY);
+            ctx.lineTo(e.offsetX, e.offsetY);
+            ctx.stroke();
+            
+            [lastX, lastY] = [e.offsetX, e.offsetY];
+        }
+        
+        // 停止绘制
+        function stopDrawing() {
+            isDrawing = false;
+        }
+        
+        // 添加绘图事件监听器
+        canvas.addEventListener('mousedown', startDrawing);
+        canvas.addEventListener('mousemove', draw);
+        canvas.addEventListener('mouseup', stopDrawing);
+        canvas.addEventListener('mouseout', stopDrawing);
+        
+        // 触摸事件支持
+        canvas.addEventListener('touchstart', (e) => {
+            const touch = e.touches[0];
+            const rect = canvas.getBoundingClientRect();
+            const x = touch.clientX - rect.left;
+            const y = touch.clientY - rect.top;
+            
+            e.preventDefault();
+            isDrawing = true;
+            [lastX, lastY] = [x, y];
+            
+            // 隐藏提示文本
+            const placeholder = document.getElementById('signaturePlaceholder');
+            if (placeholder) {
+                placeholder.classList.add('hidden');
+            }
+        });
+        
+        canvas.addEventListener('touchmove', (e) => {
+            if (!isDrawing) return;
+            
+            const touch = e.touches[0];
+            const rect = canvas.getBoundingClientRect();
+            const x = touch.clientX - rect.left;
+            const y = touch.clientY - rect.top;
+            
+            e.preventDefault();
+            ctx.lineWidth = 2;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            ctx.strokeStyle = '#000';
+            
+            ctx.beginPath();
+            ctx.moveTo(lastX, lastY);
+            ctx.lineTo(x, y);
+            ctx.stroke();
+            
+            [lastX, lastY] = [x, y];
+        });
+        
+        canvas.addEventListener('touchend', () => {
+            isDrawing = false;
+        });
+        
+        // 清除签字
+        document.getElementById('clearSignatureBtn').addEventListener('click', function() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // 重新显示提示文本
+            const placeholder = document.getElementById('signaturePlaceholder');
+            if (placeholder) {
+                placeholder.classList.remove('hidden');
+            }
+        });
+        
+        // 保存签字并提交
+        document.getElementById('saveSignatureBtn').addEventListener('click', function() {
+            // 检查是否填写了签署人姓名
+            const signerName = document.getElementById('signerName').value.trim();
+            if (!signerName) {
+                alert('请先输入您的姓名');
+                return;
+            }
+            
+            // 检查是否有签字内容
+            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const data = imageData.data;
+            let hasContent = false;
+            
+            for (let i = 0; i < data.length; i += 4) {
+                if (data[i] !== 255 || data[i+1] !== 255 || data[i+2] !== 255 || data[i+3] !== 0) {
+                    hasContent = true;
+                    break;
+                }
+            }
+            
+            if (!hasContent) {
+                alert('请先在画布上签署您的姓名');
+                return;
+            }
+            
+            // 模拟提交签字
+            const signatureData = canvas.toDataURL('image/png');
+            console.log('保存签字数据:', signatureData);
+            
+            // 隐藏签字页面
+            document.getElementById('signatureModal').classList.add('hidden');
+            
+            // 显示提交成功提示
+            alert('问卷提交成功，等待审核！');
+        });
+        
+        // 从签字页面返回
+        document.getElementById('backFromSignatureBtn').addEventListener('click', function() {
+            document.getElementById('signatureModal').classList.add('hidden');
+        });
+        
+        // 保存草稿按钮 - 仅当元素存在时添加事件监听器
+        const saveDraftBtn = document.getElementById('saveDraftBtn');
+        if (saveDraftBtn) {
+            saveDraftBtn.addEventListener('click', function() {
+                // 模拟保存草稿
+                const saveToast = document.getElementById('saveToast');
+                if (saveToast) {
+                    saveToast.classList.remove('hidden');
+                    
+                    setTimeout(function() {
+                        saveToast.classList.add('hidden');
+                    }, 2000);
+                }
+            });
+        }
+        
+        // 录音按钮 - 仅当元素存在时添加事件监听器
+        const recordingBtn = document.getElementById('recordingBtn');
+        if (recordingBtn) {
+            let isRecording = false;
+            recordingBtn.addEventListener('click', function() {
+                isRecording = !isRecording;
+                const recordingToast = document.getElementById('recordingToast');
+                
+                if (isRecording) {
+                    this.classList.remove('bg-primary');
+                    this.classList.add('bg-danger');
+                    recordingToast.classList.remove('hidden');
+                } else {
+                    this.classList.remove('bg-danger');
+                    this.classList.add('bg-primary');
+                    recordingToast.classList.add('hidden');
+                }
+            });
+        }
+        
+        // 播放录音
+        document.getElementById('playRecording').addEventListener('click', function() {
+            // 切换播放/暂停图标
+            const icon = this.querySelector('i');
+            if (icon.classList.contains('fa-play')) {
+                icon.classList.remove('fa-play');
+                icon.classList.add('fa-pause');
+            } else {
+                icon.classList.remove('fa-pause');
+                icon.classList.add('fa-play');
+            }
+        });
+        
+        // 提交确认弹窗
+        const submitModal = document.getElementById('submitModal');
+        const cancelSubmitBtn = document.getElementById('cancelSubmitBtn');
+        const confirmSubmitBtn = document.getElementById('confirmSubmitBtn');
+        
+        // 模拟提交操作
+        // 在实际应用中，这里会有一个提交按钮
+        function openSubmitModal() {
+            submitModal.classList.remove('hidden');
+        }
+        
+        cancelSubmitBtn.addEventListener('click', function() {
+            submitModal.classList.add('hidden');
+        });
+        
+        confirmSubmitBtn.addEventListener('click', function() {
+            submitModal.classList.add('hidden');
+            // 模拟提交成功
+            alert('问卷提交成功，等待审核！');
+        });
+        
+        // 点击弹窗外部关闭
+        submitModal.addEventListener('click', function(e) {
+            if (e.target === submitModal) {
+                submitModal.classList.add('hidden');
+            }
+        });
+        
+        // 自动保存功能（模拟）
+        function autoSave() {
+            console.log('自动保存问卷进度');
+        }
+        
+        // 每30秒自动保存一次
+        setInterval(autoSave, 30000);
+        
+        // 页面离开前提示
+        window.addEventListener('beforeunload', function(e) {
+            // 取消事件
+            e.preventDefault();
+            // Chrome需要设置returnValue
+            e.returnValue = '';
+            return '';
+        });
+    </script>
+</body>
+</html>

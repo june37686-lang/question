@@ -1,0 +1,309 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>神秘客问卷</title>
+  <style>
+    :root{      --bg:#f4f6f8; --panel:#ffffff; --muted:#98a0ad; --primary:#2f8cf6; --success:#2db48f; --danger:#ff6b6b; --accent:#f5f7fb;
+      --border: #eef2f6; --radius:8px; --shadow: 0 6px 18px rgba(39,57,80,0.06);
+      font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans CJK SC","PingFang SC","Hiragino Sans GB","Microsoft Yahei",sans-serif;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--bg);color:#263238;font-size:14px}
+    header{height:64px;background:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 18px;border-bottom:1px solid var(--border)}
+    .brand{display:flex;align-items:center;gap:10px}
+    .logo{width:36px;height:36px;border-radius:6px;background:linear-gradient(135deg,#3db59f,#2f8cf6);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700}
+    .brand h1{margin:0;font-size:16px}
+    .user{display:flex;align-items:center;gap:12px;color:var(--muted)}
+
+    .wrap{display:flex;min-height:calc(100vh - 64px)}
+    nav.sidebar{width:220px;background:linear-gradient(#fff,#fbfdff);border-right:1px solid var(--border);padding:18px}
+    nav.sidebar .nav-section{margin-bottom:14px}
+    nav a{display:block;padding:10px;border-radius:6px;color:#243447;text-decoration:none;margin-bottom:6px}
+    nav a.active{background:var(--accent);color:var(--primary);font-weight:600}
+
+    main{flex:1;padding:18px}
+    .page-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+    .breadcrumb{color:var(--muted)}
+
+    .card{background:var(--panel);border-radius:8px;padding:14px;box-shadow:var(--shadow);border:1px solid var(--border)}
+
+    .controls{display:flex;gap:10px;align-items:center}
+    select, input[type=text]{height:36px;padding:6px 10px;border-radius:6px;border:1px solid #e6edf5;background:#fff}
+    button.primary{background:var(--primary);color:#fff;border:none;padding:8px 14px;border-radius:6px;cursor:pointer}
+    button.ghost{background:transparent;border:1px solid var(--border);padding:8px 12px;border-radius:6px;cursor:pointer}
+
+    table{width:100%;border-collapse:collapse;margin-top:12px}
+    th,td{padding:12px 10px;border-bottom:1px solid var(--border);text-align:left;font-size:13px}
+    th{color:var(--muted);font-weight:600}
+    td .tag{display:inline-block;padding:4px 8px;border-radius:12px;background:#f1f9ff;color:var(--primary);font-size:12px}
+    td .tag.green{background:#f1fbf6;color:var(--success)}
+    td.actions a{margin-right:8px;color:var(--primary);text-decoration:none}
+
+    .pagination{display:flex;justify-content:flex-end;gap:10px;margin-top:12px;color:var(--muted)}
+
+    /* Modal */
+    .overlay{position:fixed;inset:0;background:rgba(15,23,42,0.45);display:none;align-items:center;justify-content:center;z-index:200}
+    .modal{width:760px;background:var(--panel);border-radius:10px;padding:18px;box-shadow:0 20px 60px rgba(10,20,40,0.3);}
+    .modal h2{margin:0 0 8px 0}
+    .modal p{color:var(--muted);margin:0 0 14px 0}
+    .options{display:flex;gap:14px}
+    .option{flex:1;border:1px solid var(--border);background:linear-gradient(180deg,#fff,#fbfdff);padding:16px;border-radius:8px;cursor:pointer;display:flex;flex-direction:column;gap:10px}
+    .option.active{border-color:var(--primary);box-shadow:0 6px 18px rgba(47,140,246,0.12)}
+    .option .icon{width:44px;height:44px;border-radius:8px;background:#f3f7ff;display:flex;align-items:center;justify-content:center}
+    .option h3{margin:0;font-size:15px}
+    .option p{margin:0;color:var(--muted);font-size:13px}
+    .modal-footer{display:flex;justify-content:flex-end;gap:10px;margin-top:12px}
+
+    /* small helper screens */
+    .editor-panel{position:fixed;right:0;top:64px;bottom:0;width:680px;background:#fff;border-left:1px solid var(--border);box-shadow:-12px 0 30px rgba(15,23,42,0.06);z-index:150;transform:translateX(110%);transition:transform .28s ease}
+    .editor-panel.open{transform:translateX(0)}
+    .editor-panel header{padding:14px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+    .editor-panel .content{padding:14px;overflow:auto}
+
+    .toast{position:fixed;right:20px;bottom:20px;background:#111;color:#fff;padding:10px 14px;border-radius:8px;opacity:0;transform:translateY(8px);transition:all .28s}
+    .toast.show{opacity:1;transform:translateY(0)}
+
+    @media (max-width:900px){.modal{width:92%}.sidebar{display:none}.wrap{padding-left:0}}
+  </style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  </head>
+<body>
+  <header>
+      <div class="brand"><div class="logo">CRM</div><h1>CRM客户体验管理综合平台</h1></div>
+      <div class="user">admin&nbsp;&nbsp;<svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10" stroke="#dfe7ee" stroke-width="1.2" fill="#fff"/><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zM4 20c0-3.31 4.03-6 8-6s8 2.69 8 6" stroke="#98a0ad" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    </header>
+  <div class="wrap">
+    <nav class="sidebar">
+      <div class="nav-section"><div style="color:var(--muted);font-size:12px;padding:10px 10px 4px 10px;">问卷管理</div></div>
+      <a href="#" class="flex items-center">
+        <i class="fa fa-list-ul w-6" style="margin-right: 8px;"></i>
+        <span>问卷列表</span>
+      </a>
+      <a href="#" class="flex items-center">
+        <i class="fa fa-volume-up w-6" style="margin-right: 8px;"></i>
+        <span>语音列表</span>
+      </a>
+      
+      <div class="nav-section"><div style="color:var(--muted);font-size:12px;padding:10px 10px 4px 10px;margin-top: 20px;">神秘客调研</div></div>
+      <a href="admin_dashboard.html" class="flex items-center">
+        <i class="fa fa-tachometer w-6" style="margin-right: 8px;"></i>
+        <span>控制台</span>
+      </a>
+      <a href="questionnaire_list.html" class="active flex items-center">
+        <i class="fa fa-question-circle w-6" style="margin-right: 8px;"></i>
+        <span>神秘客问卷</span>
+      </a>
+      <a href="review_management.html" class="flex items-center">
+        <i class="fa fa-headphones w-6" style="margin-right: 8px;"></i>
+        <span>审核管理</span>
+      </a>
+      <a href="score_management.html" class="flex items-center">
+        <i class="fa fa-bar-chart w-6" style="margin-right: 8px;"></i>
+        <span>成绩统计</span>
+      </a>
+      <a href="appeal_management.html" class="flex items-center">
+        <i class="fa fa-gavel w-6" style="margin-right: 8px;"></i>
+        <span>申诉管理</span>
+      </a>
+      <a href="Master Data Management.html" class="flex items-center">
+        <i class="fa fa-database w-6" style="margin-right: 8px;"></i>
+        <span>门店主数据</span>
+      </a>
+      <a href="store_report.html" class="flex items-center">
+        <i class="fa fa-file-text w-6" style="margin-right: 8px;"></i>
+        <span>门店报告</span>
+      </a>
+    </nav>
+    <main>
+      <div class="page-head">
+        <div>
+          <div class="breadcrumb">问卷管理 / <strong>神秘客问卷</strong></div>
+        </div>
+        <div class="controls">
+          <div style="display:flex;gap:8px;align-items:center">
+            <select aria-label="问卷状态">
+              <option value="">问卷状态</option>
+              <option>未开始</option>
+              <option>已发布</option>
+              <option>已结束</option>
+            </select>
+            <input type="text" placeholder="请输入问卷名称快速搜索" />
+            <button class="primary">查询</button>
+          </div>
+          <button id="btnNew" class="primary" style="display:flex;align-items:center;gap:8px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 5v14M5 12h14" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> 新建问卷</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <table>
+          <thead>
+            <tr><th>问卷名称</th><th>问卷状态</th><th>问卷题数</th><th>答卷数</th><th>创建人</th><th>创建时间</th><th>更新时间</th><th>操作</th></tr>
+          </thead>
+          <tbody id="qTableBody">
+            <!-- sample rows inserted by JS -->
+          </tbody>
+        </table>
+        <div class="pagination">上一页 1/5 下一页</div>
+      </div>
+    </main>
+  </div>
+
+  <!-- modal -->
+  <div id="overlay" class="overlay" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+      <h2 id="modal-title">新建问卷</h2>
+      <p>请选择创建方式：手动创建问卷，或从系统模板导入问卷（导入后可编辑）。</p>
+      <div class="options" role="list">
+        <div class="option active" data-mode="manual" role="listitem" tabindex="0">
+          <div style="display:flex;align-items:center;justify-content:space-between">
+            <div style="display:flex;gap:12px;align-items:center">
+              <div class="icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M3 7h18M6 11h12M8 15h8" stroke="#2f8cf6" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+              <div>
+                <h3>手动创建问卷</h3>
+                <p>从空白问卷开始：自定义题型、选项分值与逻辑。</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="option" data-mode="template" role="listitem" tabindex="0">
+          <div style="display:flex;gap:12px;align-items:center">
+            <div class="icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M3 7h18v10H3zM7 3h10v4H7z" stroke="#23bfa6" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <div>
+              <h3>从模板导入</h3>
+              <p>从系统模板快速生成问卷，支持二次编辑与映射题号。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top:12px;display:none;" id="templateArea">
+        <div style="display:flex;gap:10px;align-items:center">
+          <select id="templateSelect" style="min-width:260px">
+            <option value="">请选择模板（示例）</option>
+            <option value="service_eval">美丽田园直营神秘客测评问卷-客人填写版</option>
+            <option value="product_check">医美三套问卷-客人填写版</option>
+            <option value="full_audit">贝黎诗神秘顾客测评问卷-客人填写版</option>
+          </select>
+          <input type="file" id="templateUpload" style="display:none" />
+          <button class="ghost" id="btnUpload" onclick="document.getElementById('templateUpload').click()">上传本地模板</button>
+          <div style="color:var(--muted);font-size:13px">或选择已有模板</div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="ghost" id="btnCancel">取消</button>
+        <button id="btnConfirm" class="primary">确定</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- editor slide panel (for manual create) -->
+  <div id="editorPanel" class="editor-panel" aria-hidden="true">
+    <header><strong>问卷编辑器（示例）</strong><div><button class="ghost" id="closeEditor">关闭</button></div></header>
+    <div class="content">
+      <div style="margin-bottom:12px;color:var(--muted)">此为高保真原型的编辑器示例。实际编辑器会包含题目组件库、题目排序、分值配置与逻辑设置。</div>
+      <label style="display:block;margin-bottom:8px">问卷名称</label>
+      <input type="text" id="editorTitle" placeholder="请输入问卷名称，例如：门店服务评价-2025Q1" style="width:100%;height:40px;padding:8px;border-radius:6px;border:1px solid var(--border)" />
+
+      <div style="margin-top:12px;display:flex;gap:8px">
+        <button class="primary" id="saveDraft">保存为草稿</button>
+        <button class="ghost" id="publishNow">发布到门店</button>
+      </div>
+
+      <hr style="margin:16px 0;border:none;border-top:1px solid var(--border)" />
+      <h4>快速示例 — 添加一道单选题</h4>
+      <div style="background:#fafbff;border:1px dashed var(--border);padding:12px;border-radius:8px">
+        <div style="margin-bottom:8px">1. 服务态度如何？</div>
+        <label style="display:block;margin-bottom:6px"><input type="radio" name="q1" value="5"> 很好（5分）</label>
+        <label style="display:block;margin-bottom:6px"><input type="radio" name="q1" value="3"> 一般（3分）</label>
+        <label style="display:block;margin-bottom:6px"><input type="radio" name="q1" value="0"> 差（0分）</label>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast">操作成功</div>
+
+  <script>
+    // sample data
+    const sample = [
+      ['美丽田园直营神秘客测评问卷-客人填写版','未开始',10,17952,'admin','2023/02/15 17:53:25','2023/02/15 17:53:25'],
+      ['医美三套问卷-客人填写版','已发布',10,17952,'admin','2023/02/15 17:53:25','2023/02/15 17:53:25'],
+      ['贝黎诗神秘顾客测评问卷-客人填写版','已结束',18,534,'auditor','2024/05/03 09:11:42','2024/06/01 11:00:00']
+    ];
+    const tbody = document.getElementById('qTableBody');
+    sample.forEach(r=>{
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td>${r[0]}</td><td><span class=\"tag ${r[1]==='已发布'?'green':''}\">${r[1]}</span></td><td>${r[2]}</td><td>${r[3]}</td><td>${r[4]}</td><td>${r[5]}</td><td>${r[6]}</td><td class=\"actions\"><a href=\"#\">编辑</a><a href=\"#\">发布</a><a href=\"#\">删除</a></td>`;
+      tbody.appendChild(tr);
+    })
+
+    const overlay = document.getElementById('overlay');
+    const btnNew = document.getElementById('btnNew');
+    const btnCancel = document.getElementById('btnCancel');
+    const btnConfirm = document.getElementById('btnConfirm');
+    const options = document.querySelectorAll('.option');
+    const templateArea = document.getElementById('templateArea');
+    const editorPanel = document.getElementById('editorPanel');
+    const toast = document.getElementById('toast');
+
+    btnNew.addEventListener('click',()=>{ overlay.style.display='flex'; overlay.setAttribute('aria-hidden','false'); document.body.style.overflow='hidden'; document.querySelector('.option.active').focus(); });
+    btnCancel.addEventListener('click',closeModal);
+    overlay.addEventListener('click',(e)=>{ if(e.target===overlay) closeModal(); });
+    document.addEventListener('keydown',(e)=>{ if(e.key==='Escape'){ if(overlay.style.display==='flex'){ closeModal(); } else if(editorPanel.classList.contains('open')){closeEditorPanel();}}});
+
+    options.forEach(opt=>{
+      opt.addEventListener('click',()=>{ setActive(opt); });
+      opt.addEventListener('keydown',(e)=>{ if(e.key==='Enter' || e.key===' '){ e.preventDefault(); setActive(opt); } });
+    });
+
+    function setActive(el){ options.forEach(o=>o.classList.remove('active'));
+      el.classList.add('active');
+      if(el.dataset.mode==='template'){ templateArea.style.display='block'; } else { templateArea.style.display='none'; }
+    }
+
+    btnConfirm.addEventListener('click',()=>{
+      const selected = document.querySelector('.option.active').dataset.mode;
+      if(selected==='manual'){
+        // open editor panel
+        openEditorPanel();
+        showToast('已开始手动创建，打开问卷编辑器');
+        closeModal();
+      } else {
+        const sel = document.getElementById('templateSelect').value;
+        if(!sel){ showToast('请先选择模板或上传文件'); return; }
+        // simulate template import
+        closeModal();
+        showToast('模板已导入（示例）—— 现在可编辑或发布');
+        // append a new row to the table to simulate created questionnaire
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td>${sel==='service_eval'?'服务评价问卷（导入）':sel==='product_check'?'货品巡检（导入）':'门店全流程（导入）'}</td><td><span class=\"tag green\">已发布</span></td><td>12</td><td>0</td><td>admin</td><td>${new Date().toLocaleString()}</td><td>${new Date().toLocaleString()}</td><td class=\"actions\"><a href=\"#\">编辑</a><a href=\"#\">导出</a></td>`;
+        tbody.insertBefore(tr, tbody.firstChild);
+      }
+    });
+
+    function closeModal(){ overlay.style.display='none'; overlay.setAttribute('aria-hidden','true'); document.body.style.overflow='auto'; }
+
+    function openEditorPanel(){ editorPanel.classList.add('open'); editorPanel.setAttribute('aria-hidden','false'); }
+    function closeEditorPanel(){ editorPanel.classList.remove('open'); editorPanel.setAttribute('aria-hidden','true'); }
+    document.getElementById('closeEditor').addEventListener('click',closeEditorPanel);
+
+    // small helpers
+    function showToast(text='操作成功'){
+      toast.textContent = text; toast.classList.add('show'); setTimeout(()=>toast.classList.remove('show'),2400);
+    }
+
+    // template upload preview (mock)
+    const tplUpload = document.getElementById('templateUpload');
+    tplUpload.addEventListener('change',(e)=>{
+      const f = e.target.files && e.target.files[0];
+      if(!f) return; showToast('已选择上传文件：'+f.name);
+      // in a real system we'd parse and import the template file here
+    });
+
+    // accessibility: trap tab inside modal when open
+    overlay.addEventListener('keydown',function(e){ if(e.key==='Tab'){ const focusables = overlay.querySelectorAll('button, [tabindex], input, select'); const f = Array.from(focusables).filter(x=>!x.disabled); if(f.length){ const idx = f.indexOf(document.activeElement); if(e.shiftKey && idx===0){ e.preventDefault(); f[f.length-1].focus(); } else if(!e.shiftKey && idx===f.length-1){ e.preventDefault(); f[0].focus(); } } } });
+  </script>
+</body>
+</html>

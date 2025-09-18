@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>神秘客管理 - 主数据管理</title>
+  <style>
+    :root{
+      --bg:#f4f6f8; --panel:#ffffff; --muted:#98a0ad; --primary:#2f8cf6; --success:#2db48f; --danger:#ff6b6b; --accent:#f5f7fb;
+      --border: #eef2f6; --radius:8px; --shadow: 0 6px 18px rgba(39,57,80,0.06);
+      font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans CJK SC","PingFang SC","Hiragino Sans GB","Microsoft Yahei",sans-serif;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--bg);color:#263238;font-size:14px}
+    header{height:64px;background:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 18px;border-bottom:1px solid var(--border)}
+    .brand{display:flex;align-items:center;gap:10px}
+    .logo{width:36px;height:36px;border-radius:6px;background:linear-gradient(135deg,#3db59f,#2f8cf6);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700}
+    .brand h1{margin:0;font-size:16px}
+    .user{display:flex;align-items:center;gap:12px;color:var(--muted)}
+
+    .wrap{display:flex;min-height:calc(100vh - 64px)}
+    nav.sidebar{width:220px;background:linear-gradient(#fff,#fbfdff);border-right:1px solid var(--border);padding:18px}
+    nav.sidebar .nav-section{margin-bottom:14px}
+    nav a{display:block;padding:10px;border-radius:6px;color:#243447;text-decoration:none;margin-bottom:6px}
+    nav a.active{background:var(--accent);color:var(--primary);font-weight:600}
+
+    main{flex:1;padding:18px}
+    .page-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+    .breadcrumb{color:var(--muted)}
+
+    .card{background:var(--panel);border-radius:8px;padding:14px;box-shadow:var(--shadow);border:1px solid var(--border)}
+
+    .controls{display:flex;gap:10px;align-items:center}
+    select, input[type=text]{height:36px;padding:6px 10px;border-radius:6px;border:1px solid #e6edf5;background:#fff}
+    button.primary{background:var(--primary);color:#fff;border:none;padding:8px 14px;border-radius:6px;cursor:pointer}
+    button.ghost{background:transparent;border:1px solid var(--border);padding:8px 12px;border-radius:6px;cursor:pointer}
+
+    table{width:100%;border-collapse:collapse;margin-top:12px}
+    th,td{padding:12px 10px;border-bottom:1px solid var(--border);text-align:left;font-size:13px}
+    th{color:var(--muted);font-weight:600}
+    td .tag{display:inline-block;padding:4px 8px;border-radius:12px;background:#f1f9ff;color:var(--primary);font-size:12px}
+    td .tag.green{background:#f1fbf6;color:var(--success)}
+    td.actions a{margin-right:8px;color:var(--primary);text-decoration:none}
+
+    .pagination{display:flex;justify-content:flex-end;gap:10px;margin-top:12px;color:var(--muted)}
+
+    /* Modal */
+    .overlay{position:fixed;inset:0;background:rgba(15,23,42,0.45);display:none;align-items:center;justify-content:center;z-index:200}
+    .modal{width:760px;background:var(--panel);border-radius:10px;padding:18px;box-shadow:0 20px 60px rgba(10,20,40,0.3);}
+    .modal h2{margin:0 0 8px 0}
+    .modal p{color:var(--muted);margin:0 0 14px 0}
+    .modal-content{background:#fff;padding:1rem;border-radius:var(--radius);width:400px;box-shadow:var(--shadow);}
+    .modal-content h3{margin-top:0;font-size:1rem;}
+    .form-group{margin-bottom:1rem;}
+    .form-group label{display:block;margin-bottom:.4rem;font-size:.85rem;color:#333;}
+    .form-group input, .form-group select{width:100%;padding:.5rem;border:1px solid var(--border);border-radius:var(--radius);}
+    .modal-actions{text-align:right;}
+    button.btn-primary{background:var(--primary);color:#fff;border:none;padding:8px 14px;border-radius:6px;cursor:pointer}
+    button.btn-edit{background:var(--success);color:#fff;border:none;padding:8px 14px;border-radius:6px;cursor:pointer}
+    button.btn-delete{background:var(--danger);color:#fff;border:none;padding:8px 14px;border-radius:6px;cursor:pointer}
+
+    @media (max-width:900px){.modal{width:92%}.sidebar{display:none}.wrap{padding-left:0}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand"><div class="logo">美</div><h1>CRM客户体验管理综合平台</h1></div>
+    <div class="user">admin&nbsp;&nbsp;<svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10" stroke="#dfe7ee" stroke-width="1.2" fill="#fff"/><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zM4 20c0-3.31 4.03-6 8-6s8 2.69 8 6" stroke="#98a0ad" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+  </header>
+  <div class="wrap">
+    <nav class="sidebar">
+      <div class="nav-section">
+        <a href="#">问卷管理</a>
+        <div style="padding-left: 14px; margin-top: 4px;">
+          <a href="#" style="padding: 6px 10px; font-size: 13px;">问卷列表</a>
+          <a href="#" style="padding: 6px 10px; font-size: 13px;">语音列表</a>
+        </div>
+      </div>
+      <div class="nav-section">
+        <a href="#">神秘客调研</a>
+        <div style="padding-left: 14px; margin-top: 4px;">
+          <a href="admin_dashboard.html" style="padding: 6px 10px; font-size: 13px;">控制台</a>
+          <a href="questionnaire_list.html" style="padding: 6px 10px; font-size: 13px;">神秘客问卷</a>
+          <a href="audio_review.html" style="padding: 6px 10px; font-size: 13px;">录音审核</a>
+          <a href="score_management.html" style="padding: 6px 10px; font-size: 13px;">成绩统计</a>
+          <a href="appeal_management.html" style="padding: 6px 10px; font-size: 13px;">申诉管理</a>
+          <a href="#" class="active" style="padding: 6px 10px; font-size: 13px;">门店主数据</a>
+          <a href="store_report.html" style="padding: 6px 10px; font-size: 13px;">单店报告</a>
+        </div>
+      </div>
+    </nav>
+    <main>
+      <div class="page-head">
+        <div>
+          <div class="breadcrumb">神秘客管理 / <strong>主数据管理</strong></div>
+        </div>
+      </div>
+      <div class="card">
+    <h1>门店信息管理</h1>
+    <button class="btn-primary" onclick="openModal()">新增门店</button>
+    <table>
+      <thead>
+        <tr>
+          <th>门店编码</th>
+          <th>门店名称</th>
+          <th>状态</th>
+          <th>操作</th>
+        </tr>
+      </thead>
+      <tbody id="storeTable">
+        <tr>
+          <td>BF10101</td>
+          <td>上海陆家嘴中心店</td>
+          <td>启用</td>
+          <td>
+            <button class="btn-edit" onclick="editStore(this)">编辑</button>
+            <button class="btn-delete" onclick="deleteStore(this)">删除</button>
+          </td>
+        </tr>
+        <tr>
+          <td>BF10094</td>
+          <td>上海环宇城店</td>
+          <td>启用</td>
+          <td>
+            <button class="btn-edit" onclick="editStore(this)">编辑</button>
+            <button class="btn-delete" onclick="deleteStore(this)">删除</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+      </div>
+    </main>
+  </div>
+
+  <div id="storeModal" class="overlay" aria-hidden="true">
+    <div class="modal-content">
+    <div class="modal-content">
+      <h3 id="modalTitle">新增门店</h3>
+      <div class="form-group">
+        <label for="storeCode">门店编码</label>
+        <input type="text" id="storeCode">
+      </div>
+      <div class="form-group">
+        <label for="storeName">门店名称</label>
+        <input type="text" id="storeName">
+      </div>
+      <div class="form-group">
+        <label for="storeStatus">状态</label>
+        <select id="storeStatus">
+          <option value="启用">启用</option>
+          <option value="停用">停用</option>
+        </select>
+      </div>
+      <div class="modal-actions">
+        <button onclick="saveStore()" class="btn-primary">保存</button>
+        <button onclick="closeModal()">取消</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let editingRow = null;
+
+    function openModal(){
+      editingRow = null;
+      document.getElementById('modalTitle').innerText = '新增门店';
+      document.getElementById('storeCode').value = '';
+      document.getElementById('storeName').value = '';
+      document.getElementById('storeStatus').value = '启用';
+      document.getElementById('storeModal').style.display = 'flex';
+      document.getElementById('storeModal').setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal(){
+      document.getElementById('storeModal').style.display = 'none';
+      document.getElementById('storeModal').setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = 'auto';
+    }
+
+    function saveStore(){
+      const code = document.getElementById('storeCode').value;
+      const name = document.getElementById('storeName').value;
+      const status = document.getElementById('storeStatus').value;
+      if(editingRow){
+        editingRow.cells[0].innerText = code;
+        editingRow.cells[1].innerText = name;
+        editingRow.cells[2].innerText = status;
+      } else {
+        const tbody = document.getElementById('storeTable');
+        const row = tbody.insertRow();
+        row.insertCell(0).innerText = code;
+        row.insertCell(1).innerText = name;
+        row.insertCell(2).innerText = status;
+        const actionCell = row.insertCell(3);
+        actionCell.innerHTML = `<button class="btn-edit" onclick="editStore(this)">编辑</button>
+                                <button class="btn-delete" onclick="deleteStore(this)">删除</button>`;
+      }
+      closeModal();
+    }
+
+    function editStore(btn){
+      editingRow = btn.closest('tr');
+      document.getElementById('modalTitle').innerText = '编辑门店';
+      document.getElementById('storeCode').value = editingRow.cells[0].innerText;
+      document.getElementById('storeName').value = editingRow.cells[1].innerText;
+      document.getElementById('storeStatus').value = editingRow.cells[2].innerText;
+      document.getElementById('storeModal').classList.add('active');
+    }
+
+    function deleteStore(btn){
+      if(confirm('确认删除该门店吗？')){
+        btn.closest('tr').remove();
+      }
+    }
+  </script>
+</body>
+</html>
